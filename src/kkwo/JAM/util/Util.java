@@ -1,10 +1,10 @@
-package kkwo.JAM;
+package kkwo.JAM.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-class Util {
-	static String getNowDateTimeStr() {
+public class Util {
+	public static String getNowDateTimeStr() {
 		// 현재 날짜/시간
 		LocalDateTime now = LocalDateTime.now();
 		// 포맷팅

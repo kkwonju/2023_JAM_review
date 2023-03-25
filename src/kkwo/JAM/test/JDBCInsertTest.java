@@ -19,8 +19,6 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			// 공백 넣어주기
-			// 말이 되게끔
 			String sql = "INSERT INTO article";
 			sql += " SET regDate = NOW(),";
 			sql += "updateDate = NOW(),";
@@ -29,7 +27,6 @@ public class JDBCInsertTest {
 			
 			System.out.println(sql);
 			
-			// sql 태워 보내기
 			pstmt = conn.prepareStatement(sql);
 			
 			int affectedRow = pstmt.executeUpdate();
