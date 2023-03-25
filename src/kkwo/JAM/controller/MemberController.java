@@ -56,7 +56,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		int id = lastMemberId + 1;
+		int id = memberService.setNewId();
 		String loginId = null;
 		String loginPw = null;
 		String loginPwConfrim = null;
@@ -71,7 +71,7 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			if (isJoinableLoginId(loginId) == false) {
+			if (memberService.isJoinableLoginId(loginId) == false) {
 				System.out.println("이미 존재하는 아이디입니다");
 				continue;
 			}
@@ -111,17 +111,6 @@ public class MemberController extends Controller {
 		String regDate = Util.getNowDateTimeStr();
 		memberService.add(new Member(id, loginId, loginPw, name, regDate, regDate));
 		System.out.println(loginId + "님, 회원가입되셨습니다");
-		lastMemberId++;
-	}
-
-	private boolean isJoinableLoginId(String loginId) {
-		for (Member member : members) {
-			/* 이미 아이디가 존재한다면 false 반환 */
-			if (member.loginId.equals(loginId)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private void doLogin() {
@@ -138,7 +127,7 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			member = getMemberByLoginId(loginId);
+			member = memberService.getMemberByLoginId(loginId);
 
 			if (member == null) {
 				System.out.println("일치하는 회원이 없습니다");
@@ -166,15 +155,6 @@ public class MemberController extends Controller {
 		loginedMember = member;
 		System.out.println("반갑습니다 " + loginedMember.loginId + "님!");
 
-	}
-
-	private Member getMemberByLoginId(String loginId) {
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return member;
-			}
-		}
-		return null;
 	}
 
 	private void doLogout() {

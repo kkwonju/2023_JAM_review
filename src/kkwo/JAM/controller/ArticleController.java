@@ -7,6 +7,7 @@ import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Article;
 import kkwo.JAM.dto.Member;
 import kkwo.JAM.service.ArticleService;
+import kkwo.JAM.service.MemberService;
 import kkwo.JAM.util.Util;
 
 public class ArticleController extends Controller {
@@ -14,15 +15,15 @@ public class ArticleController extends Controller {
 	private String command;
 	private Scanner sc;
 	private ArticleService articleService;
+	private MemberService memberService;
 	private List<Article> articles;
 	private List<Member> members;
 
-	private int lastArticleId = 3;
-
 	public ArticleController(Scanner sc) {
 		articleService = Container.articleService;
-		articles = Container.articleDao.articles;
-		members = Container.memberDao.members;
+		memberService = Container.memberService;
+		articles = articleService.getArticles();
+		members = memberService.getMembers();
 		this.sc = sc;
 	}
 
@@ -64,7 +65,8 @@ public class ArticleController extends Controller {
 	private void doWrite() {
 		System.out.println("== 게시물 작성 ==");
 
-		int articleId = lastArticleId + 1;
+		int articleId = articleService.setNewId();
+		int memberId = loginedMember.id;
 
 		System.out.print("제목 : ");
 		String title = sc.nextLine();
@@ -72,9 +74,7 @@ public class ArticleController extends Controller {
 		String body = sc.nextLine();
 		String regDate = Util.getNowDateTimeStr();
 
-		articleService.add(new Article(articleId, loginedMember.id, title, body, regDate, regDate));
-		lastArticleId++;
-
+		articleService.add(new Article(articleId, memberId, title, body, regDate, regDate));
 		System.out.println(articleId + "번 게시글이 작성되었습니다");
 	}
 
@@ -106,7 +106,7 @@ public class ArticleController extends Controller {
 			return;
 		}
 		int id = Integer.parseInt(commDiv[2]);
-		Article article = getArticleById(id);
+		Article article = articleService.getArticleById(id);
 
 		if (article == null) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -114,41 +114,24 @@ public class ArticleController extends Controller {
 		}
 
 		String writerName = null;
-
+		
 		for (Member member : members) {
 			if (member.id == article.memberId) {
 				writerName = member.name;
 			}
 		}
-		System.out.println("번호  :" + article.id);
-		System.out.println("작성자  :" + writerName);
-		System.out.println("조회  :" + article.hit);
-		System.out.println("제목  :" + article.title);
-		System.out.println("내용  :" + article.body);
-		System.out.println("작성일  :" + article.regDate);
-		System.out.println("수정일  :" + article.updateDate);
+		System.out.println("번호  : " + article.id);
+		System.out.println("작성자  : " + writerName);
+		System.out.println("조회  : " + article.hit);
+		System.out.println("제목  : " + article.title);
+		System.out.println("내용  : " + article.body);
+		System.out.println("작성일  : " + article.regDate);
+		System.out.println("수정일  : " + article.updateDate);
 
 		article.hit++;
 	}
 
-	private int getArticleIndexById(int id) {
-		int i = 0;
-		for (Article article : articles) {
-			if (article.id == id) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
 
-	private Article getArticleById(int id) {
-		int index = getArticleIndexById(id);
-		if (index == -1) {
-			return null;
-		}
-		return articles.get(index);
-	}
 
 	private void doModify() {
 		String[] commDiv = command.split(" ");
@@ -157,7 +140,7 @@ public class ArticleController extends Controller {
 			return;
 		}
 		int id = Integer.parseInt(commDiv[2]);
-		Article article = getArticleById(id);
+		Article article = articleService.getArticleById(id);
 
 		if (article == null) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -175,9 +158,7 @@ public class ArticleController extends Controller {
 		String newBody = sc.nextLine();
 		String updateDate = Util.getNowDateTimeStr();
 
-		article.title = newTitle;
-		article.body = newBody;
-		article.updateDate = updateDate;
+		articleService.doModify(article, newTitle, newBody, updateDate);
 
 		System.out.println(id + "번 글이 수정되었습니다");
 	}
@@ -189,7 +170,7 @@ public class ArticleController extends Controller {
 			return;
 		}
 		int id = Integer.parseInt(commDiv[2]);
-		Article article = getArticleById(id);
+		Article article = articleService.getArticleById(id);
 
 		if (article == null) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -201,7 +182,7 @@ public class ArticleController extends Controller {
 			return;
 		}
 
-		articles.remove(article);
+		articleService.remove(article);
 		System.out.println(id + "번 글이 삭제되었습니다");
 	}
 
