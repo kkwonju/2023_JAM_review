@@ -20,10 +20,12 @@ public class JDBCInsertTest {
 			System.out.println("연결 성공!");
 			
 			String sql = "INSERT INTO article";
-			sql += " SET regDate = NOW(),";
-			sql += "updateDate = NOW(),";
-			sql += "title = CONCAT('제목',RAND()),";
-			sql += "`body` = CONCAT('내용',RAND());";
+			sql += " SET hit = 0,";
+			sql += " memberId = 2,";
+			sql += " title = CONCAT('제목',RAND()),";
+			sql += " `body` = CONCAT('내용',RAND()),";
+			sql += "regDate = NOW(),";
+			sql += "updateDate = NOW();";
 			
 			System.out.println(sql);
 			
