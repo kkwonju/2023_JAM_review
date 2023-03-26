@@ -36,6 +36,10 @@ public class ArticleService {
 	public void doModify(Article article, String newTitle, String newBody, String updateDate) {
 		articleDao.doModify(article, newTitle, newBody, updateDate);
 	}
+
+	public void increaseViewCount(Article article) {
+		articleDao.increaseViewCount(article);
+	}
 	
 	
 }

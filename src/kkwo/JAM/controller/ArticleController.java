@@ -1,7 +1,6 @@
 package kkwo.JAM.controller;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,12 +22,16 @@ public class ArticleController extends Controller {
 	private List<Article> articles;
 	private List<Member> members;
 
-	public ArticleController(Scanner sc) {
+	private Connection conn;
+
+	public ArticleController(Scanner sc, Connection conn) {
 		articleService = Container.articleService;
 		memberService = Container.memberService;
 		articles = articleService.getArticles();
 		members = memberService.getMembers();
+
 		this.sc = sc;
+		this.conn = conn;
 	}
 
 	@Override
@@ -71,52 +74,37 @@ public class ArticleController extends Controller {
 
 		int articleId = articleService.setNewId();
 		int memberId = loginedMember.id;
-		
+
 		System.out.print("제목 : ");
 		String title = sc.nextLine();
 		System.out.print("내용 : ");
 		String body = sc.nextLine();
 		String regDate = Util.getNowDateTimeStr();
 		
-		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://127.0.0.1:3306/JAM?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-			
-			conn = DriverManager.getConnection(url, "root", "");
+	
 			System.out.println("연결 성공!");
-			
+	
 			String sql = "INSERT INTO article";
 			sql += " SET hit = 0,";
 			sql += " memberId = " + memberId + ",";
-			sql += " title = " + title + ",";
+			sql += " title = '" + title + "',";
 			sql += " `body` = '" + body + "',";
 			sql += "regDate = NOW(),";
 			sql += "updateDate = NOW();";
-			
+	
 			System.out.println(sql);
-			
+	
 			pstmt = conn.prepareStatement(sql);
-			
+	
 			int affectedRow = pstmt.executeUpdate();
-			
+	
 			System.out.println("affectedRow : " + affectedRow);
-			
-		} catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로딩 실패");
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
-			try {
-				if (conn != null && !conn.isClosed()) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			// 동급 자원, 똑같이 추가
 			try {
 				if (pstmt != null && !pstmt.isClosed()) {
 					pstmt.close();
@@ -125,10 +113,7 @@ public class ArticleController extends Controller {
 				e.printStackTrace();
 			}
 		}
-		
-		
 
-//		articleService.add(new Article(articleId, memberId, title, body, regDate, regDate));
 		System.out.println(articleId + "번 게시글이 작성되었습니다");
 	}
 
@@ -139,7 +124,6 @@ public class ArticleController extends Controller {
 		}
 
 		System.out.println(" 번호 / 제목 /  작성자  / 조회 ");
-
 		for (int i = articles.size() - 1; i >= 0; i--) {
 			Article article = articles.get(i);
 			String writerName = null;
@@ -166,9 +150,10 @@ public class ArticleController extends Controller {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
+		articleService.increaseViewCount(article);
 
 		String writerName = null;
-		
+
 		for (Member member : members) {
 			if (member.id == article.memberId) {
 				writerName = member.name;
@@ -182,10 +167,7 @@ public class ArticleController extends Controller {
 		System.out.println("작성일  : " + article.regDate);
 		System.out.println("수정일  : " + article.updateDate);
 
-		article.hit++;
 	}
-
-
 
 	private void doModify() {
 		String[] commDiv = command.split(" ");
@@ -200,8 +182,8 @@ public class ArticleController extends Controller {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
-		
-		if(loginedMember.id != article.memberId) {
+
+		if (loginedMember.id != article.memberId) {
 			System.out.println("수정 권한이 없습니다");
 			return;
 		}
@@ -230,8 +212,8 @@ public class ArticleController extends Controller {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
-		
-		if(loginedMember.id != article.memberId) {
+
+		if (loginedMember.id != article.memberId) {
 			System.out.println("삭제 권한이 없습니다");
 			return;
 		}

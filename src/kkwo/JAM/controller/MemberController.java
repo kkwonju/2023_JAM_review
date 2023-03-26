@@ -1,9 +1,8 @@
 package kkwo.JAM.controller;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.security.auth.login.LoginContext;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
@@ -16,13 +15,15 @@ public class MemberController extends Controller {
 	private Scanner sc;
 	private MemberService memberService;
 	private List<Member> members;
+	private Connection conn;
 
 	private int lastMemberId = 3;
 
-	public MemberController(Scanner sc) {
+	public MemberController(Scanner sc, Connection conn) {
 		memberService = Container.memberService;
 		members = Container.memberDao.members;
 		this.sc = sc;
+		this.conn = conn;
 	}
 
 	@Override

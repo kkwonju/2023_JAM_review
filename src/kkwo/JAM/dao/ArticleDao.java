@@ -55,4 +55,8 @@ public class ArticleDao extends Dao{
 		article.updateDate = updateDate;
 		
 	}
+
+	public void increaseViewCount(Article article) {
+		article.hit++;
+	}
 }
