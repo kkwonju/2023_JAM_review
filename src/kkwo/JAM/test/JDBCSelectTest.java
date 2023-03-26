@@ -3,14 +3,22 @@ package kkwo.JAM.test;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import kkwo.JAM.dto.Article;
 
 
-public class JDBCInsertTest {
+public class JDBCSelectTest {
 	public static void main(String[]args) {
 		// 동급 '자원'
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		List<Article> forPrintArticles = new ArrayList<>();
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -19,27 +27,33 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			int hit = 0;
-			int memberId = 2;
-			String title = "제목";
-			String body = "내용";
-			
-			
-			String sql = "INSERT INTO article";
-			sql += " SET hit = " + hit + ",";
-			sql += " memberId = " + memberId + ",";
-			sql += " title = '" + title + "',";
-			sql += " `body` = '" + body + "',";
-			sql += "regDate = NOW(),";
-			sql += "updateDate = NOW();";
+			String sql = "SELECT *";
+			sql += " FROM article";
+			sql += " ORDER BY id DESC;";
 			
 			System.out.println(sql);
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			int affectedRow = pstmt.executeUpdate();
+			rs = pstmt.executeQuery();
 			
-			System.out.println("affectedRow : " + affectedRow);
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				int hit = rs.getInt("hit");
+				int memberId = rs.getInt("memberId");
+				String title = rs.getString("title");
+				String body = rs.getString("body");
+				String regDate = rs.getString("regDate");
+				String updateDate = rs.getString("updateDate");
+				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
+				System.out.println(forPrintArticles.get(0).id);
+				System.out.println(forPrintArticles.get(0).memberId);
+				System.out.println(forPrintArticles.get(0).title);
+				System.out.println(forPrintArticles.get(0).body);
+				System.out.println(forPrintArticles.get(0).regDate);
+				System.out.println(forPrintArticles.get(0).updateDate);
+			}
+			
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");

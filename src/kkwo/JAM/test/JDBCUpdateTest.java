@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
-public class JDBCInsertTest {
+public class JDBCUpdateTest {
 	public static void main(String[]args) {
 		// 동급 '자원'
 		Connection conn = null;
@@ -19,19 +19,13 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			int hit = 0;
-			int memberId = 2;
-			String title = "제목";
-			String body = "내용";
+			String title = "수정된 제목";
+			String body = "수정된 내용";
 			
-			
-			String sql = "INSERT INTO article";
-			sql += " SET hit = " + hit + ",";
-			sql += " memberId = " + memberId + ",";
-			sql += " title = '" + title + "',";
+			String sql = "UPDATE article";
+			sql += " SET title = '" + title + "',";
 			sql += " `body` = '" + body + "',";
-			sql += "regDate = NOW(),";
-			sql += "updateDate = NOW();";
+			sql += " updateDate = NOW();";
 			
 			System.out.println(sql);
 			

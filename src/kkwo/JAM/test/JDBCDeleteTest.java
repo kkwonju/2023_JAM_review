@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
-public class JDBCInsertTest {
+public class JDBCDeleteTest {
 	public static void main(String[]args) {
 		// 동급 '자원'
 		Connection conn = null;
@@ -19,20 +19,11 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			int hit = 0;
-			int memberId = 2;
-			String title = "제목";
-			String body = "내용";
+			int id = 2;
 			
-			
-			String sql = "INSERT INTO article";
-			sql += " SET hit = " + hit + ",";
-			sql += " memberId = " + memberId + ",";
-			sql += " title = '" + title + "',";
-			sql += " `body` = '" + body + "',";
-			sql += "regDate = NOW(),";
-			sql += "updateDate = NOW();";
-			
+			String sql = "Delete FROM article";
+			sql += " WHERE id = " + id + ";";
+
 			System.out.println(sql);
 			
 			pstmt = conn.prepareStatement(sql);
@@ -47,16 +38,15 @@ public class JDBCInsertTest {
 			System.out.println("에러 : " + e);
 		} finally {
 			try {
-				if (conn != null && !conn.isClosed()) {
-					conn.close();
+				if (pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			// 동급 자원, 똑같이 추가
 			try {
-				if (pstmt != null && !pstmt.isClosed()) {
-					pstmt.close();
+				if (conn != null && !conn.isClosed()) {
+					conn.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
