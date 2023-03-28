@@ -11,7 +11,6 @@ import java.util.Scanner;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Article;
-import kkwo.JAM.dto.Member;
 import kkwo.JAM.service.ArticleService;
 import kkwo.JAM.service.MemberService;
 import kkwo.JAM.util.Util;
@@ -70,7 +69,6 @@ public class ArticleController extends Controller {
 		String title = sc.nextLine();
 		System.out.print("내용 : ");
 		String body = sc.nextLine();
-		String regDate = Util.getNowDateTimeStr();
 
 		PreparedStatement pstmt = null;
 
@@ -106,24 +104,24 @@ public class ArticleController extends Controller {
 	}
 
 	private void showList() {
-		
+
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		List<Article> forPrintArticles = new ArrayList<>();
-		
+
 		try {
 			String sql = "SELECT *";
 			sql += " FROM article";
 			sql += " ORDER BY id DESC;";
-			
+
 			System.out.println(sql);
-			
+
 			pstmt = conn.prepareStatement(sql);
-			
+
 			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				int id = rs.getInt("id");
 				int hit = rs.getInt("hit");
 				int memberId = rs.getInt("memberId");
@@ -131,11 +129,10 @@ public class ArticleController extends Controller {
 				String body = rs.getString("body");
 				String regDate = rs.getString("regDate");
 				String updateDate = rs.getString("updateDate");
-				
+
 				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
 			}
-			
-			
+
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
@@ -154,7 +151,7 @@ public class ArticleController extends Controller {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (forPrintArticles.size() == 0) {
 			System.out.println("게시물이 없습니다");
 			return;
@@ -173,24 +170,66 @@ public class ArticleController extends Controller {
 			return;
 		}
 		int id = Integer.parseInt(commDiv[2]);
-		Article article = articleService.getArticleById(id);
 
-		if (article == null) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Article foundArticle = null;
+
+		try {
+			String sql = "SELECT *";
+			sql += " FROM article";
+			sql += " WHERE id = '" + id + "';";
+
+			System.out.println(sql);
+
+			pstmt = conn.prepareStatement(sql);
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int foundArticleId = rs.getInt("id");
+				int foundArticleHit = rs.getInt("hit");
+				int foundArticleMemberId = rs.getInt("memberId");
+				String foundArticleTitle = rs.getString("title");
+				String foundArticleBody = rs.getString("body");
+				String foundArticleRegDate = rs.getString("regDate");
+				String foundArticleUpdateDate = rs.getString("updateDate");
+
+				foundArticle = new Article(foundArticleId, foundArticleHit, foundArticleMemberId,
+						foundArticleTitle, foundArticleBody, foundArticleRegDate, foundArticleUpdateDate);
+			}
+
+		} catch (SQLException e) {
+			System.out.println("에러 : " + e);
+		} finally {
+			try {
+				if (rs != null && !rs.isClosed()) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (foundArticle == null) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
-		articleService.increaseViewCount(article);
 
-		String writerName = null;
-
-		System.out.println("번호  : " + article.id);
-		System.out.println("작성자  : " + writerName);
-		System.out.println("조회  : " + article.hit);
-		System.out.println("제목  : " + article.title);
-		System.out.println("내용  : " + article.body);
-		System.out.println("작성일  : " + article.regDate);
-		System.out.println("수정일  : " + article.updateDate);
-
+		System.out.println("번호  : " + foundArticle.id);
+		System.out.println("작성자 id  : " + foundArticle.memberId);
+		System.out.println("조회  : " + foundArticle.hit);
+		System.out.println("제목  : " + foundArticle.title);
+		System.out.println("내용  : " + foundArticle.body);
+		System.out.println("작성일  : " + foundArticle.regDate);
+		System.out.println("수정일  : " + foundArticle.updateDate);
 	}
 
 	private void doModify() {
