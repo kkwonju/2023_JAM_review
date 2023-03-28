@@ -46,17 +46,17 @@ public class JDBCInsertTest {
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
-			try {
-				if (conn != null && !conn.isClosed()) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 			// 동급 자원, 똑같이 추가
 			try {
 				if (pstmt != null && !pstmt.isClosed()) {
 					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (conn != null && !conn.isClosed()) {
+					conn.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

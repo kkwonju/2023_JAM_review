@@ -13,7 +13,7 @@ public class Member extends Dto{
 		this.regDate = regDate;
 		this.updateDate = updateDate;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Member [loginId=" + loginId + ", loginPW=" + loginPW + ", name=" + name + "]";

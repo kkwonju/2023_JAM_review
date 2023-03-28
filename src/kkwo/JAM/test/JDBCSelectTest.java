@@ -45,7 +45,9 @@ public class JDBCSelectTest {
 				String body = rs.getString("body");
 				String regDate = rs.getString("regDate");
 				String updateDate = rs.getString("updateDate");
+				
 				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
+				
 				System.out.println(forPrintArticles.get(0).id);
 				System.out.println(forPrintArticles.get(0).memberId);
 				System.out.println(forPrintArticles.get(0).title);
@@ -60,17 +62,24 @@ public class JDBCSelectTest {
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
+			// 동급 자원, 똑같이 추가
 			try {
-				if (conn != null && !conn.isClosed()) {
-					conn.close();
+				if (rs != null && !rs.isClosed()) {
+					rs.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			// 동급 자원, 똑같이 추가
 			try {
 				if (pstmt != null && !pstmt.isClosed()) {
 					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (conn != null && !conn.isClosed()) {
+					conn.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

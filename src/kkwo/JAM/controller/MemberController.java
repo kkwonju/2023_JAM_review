@@ -2,6 +2,7 @@ package kkwo.JAM.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +10,6 @@ import java.util.Scanner;
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
 import kkwo.JAM.service.MemberService;
-import kkwo.JAM.util.Util;
 
 public class MemberController extends Controller {
 	private String actionMethodName;
@@ -18,7 +18,6 @@ public class MemberController extends Controller {
 	private MemberService memberService;
 	private List<Member> members;
 	private Connection conn;
-
 
 	public MemberController(Scanner sc, Connection conn) {
 		memberService = Container.memberService;
@@ -63,8 +62,6 @@ public class MemberController extends Controller {
 				System.out.println("필수 입력란입니다");
 				continue;
 			}
-			
-			
 
 			if (memberService.isJoinableLoginId(loginId) == false) {
 				System.out.println("이미 존재하는 아이디입니다");
@@ -102,7 +99,7 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
-		
+
 		PreparedStatement pstmt = null;
 
 		try {
@@ -138,7 +135,10 @@ public class MemberController extends Controller {
 	private void doLogin() {
 		String loginId = null;
 		String loginPw = null;
-		Member member = null;
+		Member foundMember = null;
+
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 
 		while (true) {
 			System.out.print("아이디 : ");
@@ -149,9 +149,47 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			member = memberService.getMemberByLoginId(loginId);
+			try {
+				String sql = "SELECT *";
+				sql += " FROM `member`";
+				sql += " WHERE loginId = '" + loginId + "';";
 
-			if (member == null) {
+				pstmt = conn.prepareStatement(sql);
+
+				rs = pstmt.executeQuery();
+				
+				while (rs.next()) {
+					int foundMemberId = (int) rs.getInt("id");
+					String foundMemberLoginId = (String) rs.getString("loginId");
+					String foundMemberLoginPw = (String) rs.getString("loginPw");
+					String foundMemberName = (String) rs.getString("name");
+					String foundMemberRegDate = (String) rs.getString("regDate");
+					String foundMemberUpdateDate = (String) rs.getString("updateDate");
+
+					foundMember = new Member(foundMemberId, foundMemberLoginId, foundMemberLoginPw, foundMemberName,
+							foundMemberRegDate, foundMemberUpdateDate);
+				}
+
+			} catch (SQLException e) {
+				System.out.println("에러 : " + e);
+			} finally {
+				try {
+					if (rs != null && !rs.isClosed()) {
+						rs.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (pstmt != null && !pstmt.isClosed()) {
+						pstmt.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (foundMember == null) {
 				System.out.println("일치하는 회원이 없습니다");
 				continue;
 			}
@@ -167,14 +205,14 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			if (member.loginPW.equals(loginPw) == false) {
+			if (foundMember.loginPW.equals(loginPw) == false) {
 				System.out.println("비밀번호가 틀렸습니다");
 				continue;
 			}
 			break;
 		}
 
-		loginedMember = member;
+		loginedMember = foundMember;
 		System.out.println("반갑습니다 " + loginedMember.loginId + "님!");
 
 	}

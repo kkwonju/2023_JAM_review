@@ -6,3 +6,5 @@
     4. JDBC Insert 테스트
     5. 게시물 작성 시 DB에 INSERT
     6. 회원가입 시 DB에 INSERT
+    7. 로그인 시 DB에서 member 데이터 불러오기
+    8. 로그인 로그아웃 기능 구현
