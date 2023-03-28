@@ -1,7 +1,5 @@
 package kkwo.JAM.dto;
 
-import java.time.LocalDateTime;
-
 public class Member extends Dto{
 	public String loginId;
 	public String loginPW;
@@ -14,5 +12,10 @@ public class Member extends Dto{
 		this.name = name;
 		this.regDate = regDate;
 		this.updateDate = updateDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Member [loginId=" + loginId + ", loginPW=" + loginPW + ", name=" + name + "]";
 	}
 }

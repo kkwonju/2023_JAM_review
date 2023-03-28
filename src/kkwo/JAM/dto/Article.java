@@ -1,7 +1,5 @@
 package kkwo.JAM.dto;
 
-import java.time.LocalDateTime;
-
 public class Article extends Dto{
 	public int hit;
 	public int memberId;
@@ -20,5 +18,10 @@ public class Article extends Dto{
 		this.body = body;
 		this.regDate = regDate;
 		this.updateDate = updateDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Article [hit=" + hit + ", memberId=" + memberId + ", title=" + title + ", body=" + body + "]";
 	}
 }

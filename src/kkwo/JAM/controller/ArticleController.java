@@ -35,14 +35,6 @@ public class ArticleController extends Controller {
 	}
 
 	@Override
-	public void makeTestData() {
-		System.out.println("article 테스트 테이터 생성");
-		articleService.add(new Article(1, 3, "제목1", "내용1", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-		articleService.add(new Article(2, 2, "제목2", "내용2", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-		articleService.add(new Article(3, 2, "제목3", "내용3", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-	}
-
-	@Override
 	public void action(String actionMethodName, String command) {
 		this.actionMethodName = actionMethodName;
 		this.command = command;
@@ -80,13 +72,10 @@ public class ArticleController extends Controller {
 		System.out.print("내용 : ");
 		String body = sc.nextLine();
 		String regDate = Util.getNowDateTimeStr();
-		
+
 		PreparedStatement pstmt = null;
 
 		try {
-	
-			System.out.println("연결 성공!");
-	
 			String sql = "INSERT INTO article";
 			sql += " SET hit = 0,";
 			sql += " memberId = " + memberId + ",";
@@ -94,13 +83,13 @@ public class ArticleController extends Controller {
 			sql += " `body` = '" + body + "',";
 			sql += "regDate = NOW(),";
 			sql += "updateDate = NOW();";
-	
+
 			System.out.println(sql);
-	
+
 			pstmt = conn.prepareStatement(sql);
-	
+
 			int affectedRow = pstmt.executeUpdate();
-	
+
 			System.out.println("affectedRow : " + affectedRow);
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);

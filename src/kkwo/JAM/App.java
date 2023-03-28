@@ -18,9 +18,6 @@ public class App {
 		System.out.println("== 프로그램 시작 ==");
 		Scanner sc = new Scanner(System.in);
 
-//		articleController.makeTestData();
-//		memberController.makeTestData();
-
 		while (true) {
 			System.out.print("명령어 > ");
 			String command = sc.nextLine().trim();

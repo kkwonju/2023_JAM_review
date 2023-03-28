@@ -1,5 +1,8 @@
 	TODO
 	
-	1. 기본 기능 구현, 구조화, 연결 준비
-	2. MVC 구조, 각 DAO로 기능 이전
-	3. 
+    1. 게시판 기능 구현, MVC 구조
+    2. mysql connector j 추가
+    3. JDBC 연결 테스트
+    4. JDBC Insert 테스트
+    5. 게시물 작성 시 DB에 INSERT
+    6. 회원가입 시 DB에 INSERT

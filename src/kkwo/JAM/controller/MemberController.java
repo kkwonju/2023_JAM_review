@@ -1,6 +1,8 @@
 package kkwo.JAM.controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,22 +19,12 @@ public class MemberController extends Controller {
 	private List<Member> members;
 	private Connection conn;
 
-	private int lastMemberId = 3;
 
 	public MemberController(Scanner sc, Connection conn) {
 		memberService = Container.memberService;
 		members = Container.memberDao.members;
 		this.sc = sc;
 		this.conn = conn;
-	}
-
-	@Override
-	public void makeTestData() {
-		System.out.println("member 테스트 테이터 생성");
-		memberService.add(new Member(1, "test1", "pw", "송강호", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-		memberService.add(new Member(2, "test2", "pw", "최민식", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-		memberService.add(new Member(3, "test3", "pw", "백윤식", "2023-12-12 12:12:12", "2023-12-12 12:12:12"));
-
 	}
 
 	@Override
@@ -71,6 +63,8 @@ public class MemberController extends Controller {
 				System.out.println("필수 입력란입니다");
 				continue;
 			}
+			
+			
 
 			if (memberService.isJoinableLoginId(loginId) == false) {
 				System.out.println("이미 존재하는 아이디입니다");
@@ -108,9 +102,36 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
+		
+		PreparedStatement pstmt = null;
 
-		String regDate = Util.getNowDateTimeStr();
-		memberService.add(new Member(id, loginId, loginPw, name, regDate, regDate));
+		try {
+			String sql = "INSERT INTO `member`";
+			sql += " SET loginId = '" + loginId + "'";
+			sql += ", loginPw = '" + loginPw + "'";
+			sql += ", `name` = '" + name + "'";
+			sql += ", regDate = NOW()";
+			sql += ", updateDate = NOW();";
+
+			System.out.println(sql);
+
+			pstmt = conn.prepareStatement(sql);
+
+			int affectedRow = pstmt.executeUpdate();
+
+			System.out.println("affectedRow : " + affectedRow);
+		} catch (SQLException e) {
+			System.out.println("에러 : " + e);
+		} finally {
+			try {
+				if (pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
 		System.out.println(loginId + "님, 회원가입되셨습니다");
 	}
 
