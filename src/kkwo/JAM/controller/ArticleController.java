@@ -1,8 +1,11 @@
 package kkwo.JAM.controller;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,16 +22,12 @@ public class ArticleController extends Controller {
 	private Scanner sc;
 	private ArticleService articleService;
 	private MemberService memberService;
-	private List<Article> articles;
-	private List<Member> members;
 
 	private Connection conn;
 
 	public ArticleController(Scanner sc, Connection conn) {
 		articleService = Container.articleService;
 		memberService = Container.memberService;
-		articles = articleService.getArticles();
-		members = memberService.getMembers();
 
 		this.sc = sc;
 		this.conn = conn;
@@ -107,22 +106,63 @@ public class ArticleController extends Controller {
 	}
 
 	private void showList() {
-		if (articles.size() == 0) {
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		List<Article> forPrintArticles = new ArrayList<>();
+		
+		try {
+			String sql = "SELECT *";
+			sql += " FROM article";
+			sql += " ORDER BY id DESC;";
+			
+			System.out.println(sql);
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				int hit = rs.getInt("hit");
+				int memberId = rs.getInt("memberId");
+				String title = rs.getString("title");
+				String body = rs.getString("body");
+				String regDate = rs.getString("regDate");
+				String updateDate = rs.getString("updateDate");
+				
+				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
+			}
+			
+			
+		} catch (SQLException e) {
+			System.out.println("에러 : " + e);
+		} finally {
+			try {
+				if (rs != null && !rs.isClosed()) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (pstmt != null && !pstmt.isClosed()) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (forPrintArticles.size() == 0) {
 			System.out.println("게시물이 없습니다");
 			return;
 		}
 
-		System.out.println(" 번호 / 제목 /  작성자  / 조회 ");
-		for (int i = articles.size() - 1; i >= 0; i--) {
-			Article article = articles.get(i);
-			String writerName = null;
-
-			for (Member member : members) {
-				if (member.id == article.memberId) {
-					writerName = member.name;
-				}
-			}
-			System.out.printf("  %d  /  %s  /  %s  /  %d  \n", article.id, article.title, writerName, article.hit);
+		System.out.println("  번호  /     제목     /  작성자 id  /  조회  ");
+		for (Article article : forPrintArticles) {
+			System.out.printf("  %d  / %s /    %s    /  %d  \n", article.id, article.title, article.id, article.hit);
 		}
 	}
 
@@ -143,11 +183,6 @@ public class ArticleController extends Controller {
 
 		String writerName = null;
 
-		for (Member member : members) {
-			if (member.id == article.memberId) {
-				writerName = member.name;
-			}
-		}
 		System.out.println("번호  : " + article.id);
 		System.out.println("작성자  : " + writerName);
 		System.out.println("조회  : " + article.hit);
