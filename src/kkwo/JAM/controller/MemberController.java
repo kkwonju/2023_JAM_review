@@ -129,8 +129,16 @@ public class MemberController extends Controller {
 		String loginId = null;
 		String loginPw = null;
 		Member member = null;
-
+		
+		int countAttempt = 0;
+		int attemptLimit = 3;
 		while (true) {
+			if(countAttempt == attemptLimit) {
+				System.out.println("아이디를 확인 후 다시 시도해주세요");
+				return;
+			}
+			countAttempt++;
+			
 			System.out.print("아이디 : ");
 			loginId = sc.nextLine().trim();
 
@@ -155,8 +163,13 @@ public class MemberController extends Controller {
 			member = new Member(memberMap);
 			break;
 		}
-
+		countAttempt = 0;
 		while (true) {
+			if(countAttempt == attemptLimit) {
+				System.out.println("비밀번호를 확인 후 다시 시도해주세요");
+				return;
+			}
+			countAttempt++;
 			System.out.print("비밀번호 : ");
 			loginPw = sc.nextLine().trim();
 
