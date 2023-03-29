@@ -4,12 +4,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
 import kkwo.JAM.service.MemberService;
+import kkwo.JAM.util.DBUtil;
+import kkwo.JAM.util.SecSql;
 
 public class MemberController extends Controller {
 	private String actionMethodName;
@@ -48,7 +52,6 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		int id = memberService.setNewId();
 		String loginId = null;
 		String loginPw = null;
 		String loginPwConfrim = null;
@@ -63,7 +66,15 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			if (memberService.isJoinableLoginId(loginId) == false) {
+			SecSql sql = new SecSql();
+
+			sql.append("SELECT COUNT(*)");
+			sql.append("FROM `member`");
+			sql.append("WHERE loginId = ?", loginId);
+
+			int countMember = DBUtil.selectRowIntValue(conn, sql);
+
+			if (countMember != 0) {
 				System.out.println("이미 존재하는 아이디입니다");
 				continue;
 			}
@@ -100,45 +111,24 @@ public class MemberController extends Controller {
 			break;
 		}
 
-		PreparedStatement pstmt = null;
+		SecSql sql = new SecSql();
 
-		try {
-			String sql = "INSERT INTO `member`";
-			sql += " SET loginId = '" + loginId + "'";
-			sql += ", loginPw = '" + loginPw + "'";
-			sql += ", `name` = '" + name + "'";
-			sql += ", regDate = NOW()";
-			sql += ", updateDate = NOW();";
+		sql.append("INSERT INTO `member`");
+		sql.append("SET loginId = ?", loginId);
+		sql.append(", loginPw = ?", loginPw);
+		sql.append(", `name` = ?", name);
+		sql.append(", regDate = NOW()");
+		sql.append(", updateDate = NOW()");
 
-			System.out.println(sql);
+		int id = DBUtil.insert(conn, sql);
 
-			pstmt = conn.prepareStatement(sql);
-
-			int affectedRow = pstmt.executeUpdate();
-
-			System.out.println("affectedRow : " + affectedRow);
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		} finally {
-			try {
-				if (pstmt != null && !pstmt.isClosed()) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		System.out.println(loginId + "님, 회원가입되셨습니다");
+		System.out.println(id + "님, 회원가입되셨습니다");
 	}
 
 	private void doLogin() {
 		String loginId = null;
 		String loginPw = null;
-		Member foundMember = null;
-
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		Member member = null;
 
 		while (true) {
 			System.out.print("아이디 : ");
@@ -149,50 +139,20 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			try {
-				String sql = "SELECT *";
-				sql += " FROM `member`";
-				sql += " WHERE loginId = '" + loginId + "';";
+			SecSql sql = new SecSql();
 
-				pstmt = conn.prepareStatement(sql);
+			sql.append("SELECT *");
+			sql.append("FROM `member`");
+			sql.append("WHERE loginId = ?", loginId);
 
-				rs = pstmt.executeQuery();
-				
-				while (rs.next()) {
-					int foundMemberId = (int) rs.getInt("id");
-					String foundMemberLoginId = (String) rs.getString("loginId");
-					String foundMemberLoginPw = (String) rs.getString("loginPw");
-					String foundMemberName = (String) rs.getString("name");
-					String foundMemberRegDate = (String) rs.getString("regDate");
-					String foundMemberUpdateDate = (String) rs.getString("updateDate");
+			Map<String, Object> memberMap = DBUtil.selectRow(conn, sql);
 
-					foundMember = new Member(foundMemberId, foundMemberLoginId, foundMemberLoginPw, foundMemberName,
-							foundMemberRegDate, foundMemberUpdateDate);
-				}
-
-			} catch (SQLException e) {
-				System.out.println("에러 : " + e);
-			} finally {
-				try {
-					if (rs != null && !rs.isClosed()) {
-						rs.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (foundMember == null) {
+			if (memberMap.isEmpty()) {
 				System.out.println("일치하는 회원이 없습니다");
 				continue;
 			}
+			
+			member = new Member(memberMap);
 			break;
 		}
 
@@ -205,14 +165,14 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			if (foundMember.loginPW.equals(loginPw) == false) {
+			if (member.loginPw.equals(loginPw) == false) {
 				System.out.println("비밀번호가 틀렸습니다");
 				continue;
 			}
 			break;
 		}
 
-		loginedMember = foundMember;
+		loginedMember = member;
 		System.out.println("반갑습니다 " + loginedMember.loginId + "님!");
 
 	}

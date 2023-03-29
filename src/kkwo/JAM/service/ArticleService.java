@@ -1,5 +1,6 @@
 package kkwo.JAM.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import kkwo.JAM.container.Container;
@@ -33,7 +34,7 @@ public class ArticleService {
 		articleDao.remove(article);
 	}
 
-	public void doModify(Article article, String newTitle, String newBody, String updateDate) {
+	public void doModify(Article article, String newTitle, String newBody, LocalDateTime updateDate) {
 		articleDao.doModify(article, newTitle, newBody, updateDate);
 	}
 

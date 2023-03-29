@@ -11,3 +11,4 @@
     9. 목록 출력 시 DB에서 복수개의 데이터 불러오기
     10. 게시글 상세보기 시 DB에서 데이터 불러오기
     11. DBUtil, SecSql, SqlErrorException 추가
+    12. DBUtil 활용

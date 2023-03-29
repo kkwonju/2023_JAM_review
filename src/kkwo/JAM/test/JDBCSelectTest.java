@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +44,10 @@ public class JDBCSelectTest {
 				int memberId = rs.getInt("memberId");
 				String title = rs.getString("title");
 				String body = rs.getString("body");
-				String regDate = rs.getString("regDate");
-				String updateDate = rs.getString("updateDate");
+//				LocalDateTime regDate = rs.getString("regDate");
+//				LocalDateTime updateDate = rs.getString("updateDate");
 				
-				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
+//				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
 				
 				System.out.println(forPrintArticles.get(0).id);
 				System.out.println(forPrintArticles.get(0).memberId);

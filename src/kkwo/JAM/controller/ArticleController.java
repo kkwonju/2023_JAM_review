@@ -4,14 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Article;
 import kkwo.JAM.service.ArticleService;
 import kkwo.JAM.service.MemberService;
+import kkwo.JAM.util.DBUtil;
+import kkwo.JAM.util.SecSql;
 import kkwo.JAM.util.Util;
 
 public class ArticleController extends Controller {
@@ -61,7 +65,6 @@ public class ArticleController extends Controller {
 	private void doWrite() {
 		System.out.println("== 게시물 작성 ==");
 
-		int articleId = articleService.setNewId();
 		int memberId = loginedMember.id;
 
 		System.out.print("제목 : ");
@@ -69,96 +72,44 @@ public class ArticleController extends Controller {
 		System.out.print("내용 : ");
 		String body = sc.nextLine();
 
-		PreparedStatement pstmt = null;
+		SecSql sql = new SecSql();
 
-		try {
-			String sql = "INSERT INTO article";
-			sql += " SET hit = 0,";
-			sql += " memberId = " + memberId + ",";
-			sql += " title = '" + title + "',";
-			sql += " `body` = '" + body + "',";
-			sql += "regDate = NOW(),";
-			sql += "updateDate = NOW();";
+		sql.append("INSERT INTO article");
+		sql.append("SET hit = 0");
+		sql.append(", memberId = ?", memberId);
+		sql.append(", title = ?", title);
+		sql.append(", `body` = ?", body);
+		sql.append(", regDate = NOW()");
+		sql.append(", updateDate = NOW()");
 
-			System.out.println(sql);
-
-			pstmt = conn.prepareStatement(sql);
-
-			int affectedRow = pstmt.executeUpdate();
-
-			System.out.println("affectedRow : " + affectedRow);
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		} finally {
-			try {
-				if (pstmt != null && !pstmt.isClosed()) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		System.out.println(articleId + "번 게시글이 작성되었습니다");
+		int articleId = DBUtil.insert(conn, sql);
+		System.out.println(articleId + "번 글이 작성되었습니다");
 	}
 
 	private void showList() {
 
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		SecSql sql = new SecSql();
 
-		List<Article> forPrintArticles = new ArrayList<>();
+		sql.append("SELECT *");
+		sql.append("FROM article");
+		sql.append("ORDER BY id DESC");
 
-		try {
-			String sql = "SELECT *";
-			sql += " FROM article";
-			sql += " ORDER BY id DESC;";
+		List<Map<String, Object>> articlesMaps = DBUtil.selectRows(conn, sql);
+		List<Article> articles = new ArrayList<>();
 
-			System.out.println(sql);
-
-			pstmt = conn.prepareStatement(sql);
-
-			rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				int hit = rs.getInt("hit");
-				int memberId = rs.getInt("memberId");
-				String title = rs.getString("title");
-				String body = rs.getString("body");
-				String regDate = rs.getString("regDate");
-				String updateDate = rs.getString("updateDate");
-
-				forPrintArticles.add(new Article(id, hit, memberId, title, body, regDate, updateDate));
-			}
-
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		} finally {
-			try {
-				if (rs != null && !rs.isClosed()) {
-					rs.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (pstmt != null && !pstmt.isClosed()) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		for (Map<String, Object> articleMap : articlesMaps) {
+			articles.add(new Article(articleMap));
 		}
 
-		if (forPrintArticles.size() == 0) {
+		if (articles.size() == 0) {
 			System.out.println("게시물이 없습니다");
 			return;
 		}
 
-		System.out.println("  번호  /     제목     /  작성자 id  /  조회  ");
-		for (Article article : forPrintArticles) {
-			System.out.printf("  %d  / %s /    %s    /  %d  \n", article.id, article.title, article.id, article.hit);
+		System.out.println("  번호  /  제목  / writer id /  조회  ");
+		for (Article article : articles) {
+			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, article.memberId,
+					article.hit);
 		}
 	}
 
@@ -170,65 +121,28 @@ public class ArticleController extends Controller {
 		}
 		int id = Integer.parseInt(commDiv[2]);
 
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Article foundArticle = null;
+		SecSql sql = new SecSql();
 
-		try {
-			String sql = "SELECT *";
-			sql += " FROM article";
-			sql += " WHERE id = '" + id + "';";
+		sql.append("SELECT *");
+		sql.append("FROM article");
+		sql.append("WHERE id = ?", id);
 
-			System.out.println(sql);
+		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
 
-			pstmt = conn.prepareStatement(sql);
-
-			rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				int foundArticleId = rs.getInt("id");
-				int foundArticleHit = rs.getInt("hit");
-				int foundArticleMemberId = rs.getInt("memberId");
-				String foundArticleTitle = rs.getString("title");
-				String foundArticleBody = rs.getString("body");
-				String foundArticleRegDate = rs.getString("regDate");
-				String foundArticleUpdateDate = rs.getString("updateDate");
-
-				foundArticle = new Article(foundArticleId, foundArticleHit, foundArticleMemberId,
-						foundArticleTitle, foundArticleBody, foundArticleRegDate, foundArticleUpdateDate);
-			}
-
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		} finally {
-			try {
-				if (rs != null && !rs.isClosed()) {
-					rs.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (pstmt != null && !pstmt.isClosed()) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if (foundArticle == null) {
+		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
 
-		System.out.println("번호  : " + foundArticle.id);
-		System.out.println("작성자 id  : " + foundArticle.memberId);
-		System.out.println("조회  : " + foundArticle.hit);
-		System.out.println("제목  : " + foundArticle.title);
-		System.out.println("내용  : " + foundArticle.body);
-		System.out.println("작성일  : " + foundArticle.regDate);
-		System.out.println("수정일  : " + foundArticle.updateDate);
+		Article article = new Article(articleMap);
+
+		System.out.println("번호  : " + article.id);
+		System.out.println("작성자 id  : " + article.memberId);
+		System.out.println("조회  : " + article.hit);
+		System.out.println("제목  : " + article.title);
+		System.out.println("내용  : " + article.body);
+		System.out.println("작성일  : " + article.regDate);
+		System.out.println("수정일  : " + article.updateDate);
 	}
 
 	private void doModify() {
@@ -237,13 +151,22 @@ public class ArticleController extends Controller {
 			System.out.println("글 번호를 입력해주세요");
 			return;
 		}
-		int id = Integer.parseInt(commDiv[2]);
-		Article article = articleService.getArticleById(id);
+		int articleId = Integer.parseInt(commDiv[2]);
 
-		if (article == null) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM article");
+		sql.append("WHERE id = ?", articleId);
+
+		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+
+		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
+
+		Article article = new Article(articleMap);
 
 		if (loginedMember.id != article.memberId) {
 			System.out.println("수정 권한이 없습니다");
@@ -254,11 +177,18 @@ public class ArticleController extends Controller {
 		String newTitle = sc.nextLine();
 		System.out.print("새 내용 : ");
 		String newBody = sc.nextLine();
-		String updateDate = Util.getNowDateTimeStr();
 
-		articleService.doModify(article, newTitle, newBody, updateDate);
+		sql = new SecSql();
 
-		System.out.println(id + "번 글이 수정되었습니다");
+		sql.append("UPDATE article");
+		sql.append("SET title = ?", newTitle);
+		sql.append(", `body` = ?", newBody);
+		sql.append(", updateDate = NOW()");
+		sql.append("WHERE id = ?", articleId);
+
+		DBUtil.update(conn, sql);
+
+		System.out.println(articleId + "번 글이 수정되었습니다");
 	}
 
 	private void doDelete() {
@@ -267,21 +197,42 @@ public class ArticleController extends Controller {
 			System.out.println("글 번호를 입력해주세요");
 			return;
 		}
-		int id = Integer.parseInt(commDiv[2]);
-		Article article = articleService.getArticleById(id);
+		int articleId = Integer.parseInt(commDiv[2]);
 
-		if (article == null) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM article");
+		sql.append("WHERE id = ?", articleId);
+
+		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+
+		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
 			return;
 		}
+
+		if (articleMap.isEmpty()) {
+			System.out.println("해당 게시글이 존재하지 않습니다");
+			return;
+		}
+
+		Article article = new Article(articleMap);
 
 		if (loginedMember.id != article.memberId) {
 			System.out.println("삭제 권한이 없습니다");
 			return;
 		}
 
+		sql = new SecSql();
+
+		sql.append("DELETE FROM article");
+		sql.append("WHERE id = ?", articleId);
+
+		DBUtil.delete(conn, sql);
+
 		articleService.remove(article);
-		System.out.println(id + "번 글이 삭제되었습니다");
+		System.out.println(articleId + "번 글이 삭제되었습니다");
 	}
 
 }

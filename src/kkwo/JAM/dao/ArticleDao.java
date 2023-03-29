@@ -1,5 +1,6 @@
 package kkwo.JAM.dao;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ArticleDao extends Dao{
 		articles.remove(article);
 	}
 
-	public void doModify(Article article, String newTitle, String newBody, String updateDate) {
+	public void doModify(Article article, String newTitle, String newBody, LocalDateTime updateDate) {
 		article.title = newTitle;
 		article.body = newBody;
 		article.updateDate = updateDate;
