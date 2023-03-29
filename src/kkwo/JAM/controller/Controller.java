@@ -14,5 +14,4 @@ public abstract class Controller {
 	}
 
 	public abstract void action(String actionMethodName, String command);
-
 }

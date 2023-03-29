@@ -1,13 +1,6 @@
 package kkwo.JAM.controller;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
@@ -18,16 +11,10 @@ import kkwo.JAM.util.SecSql;
 public class MemberController extends Controller {
 	private String actionMethodName;
 	private String command;
-	private Scanner sc;
 	private MemberService memberService;
-	private List<Member> members;
-	private Connection conn;
 
-	public MemberController(Scanner sc, Connection conn) {
+	public MemberController() {
 		memberService = Container.memberService;
-		members = Container.memberDao.members;
-		this.sc = sc;
-		this.conn = conn;
 	}
 
 	@Override
@@ -59,7 +46,7 @@ public class MemberController extends Controller {
 
 		while (true) {
 			System.out.print("아이디 : ");
-			loginId = sc.nextLine().trim();
+			loginId = Container.sc.nextLine().trim();
 
 			if (loginId.length() == 0) {
 				System.out.println("필수 입력란입니다");
@@ -72,7 +59,7 @@ public class MemberController extends Controller {
 			sql.append("FROM `member`");
 			sql.append("WHERE loginId = ?", loginId);
 
-			int countMember = DBUtil.selectRowIntValue(conn, sql);
+			int countMember = DBUtil.selectRowIntValue(Container.conn, sql);
 
 			if (countMember != 0) {
 				System.out.println("이미 존재하는 아이디입니다");
@@ -83,7 +70,7 @@ public class MemberController extends Controller {
 
 		while (true) {
 			System.out.print("비밀번호 : ");
-			loginPw = sc.nextLine().trim();
+			loginPw = Container.sc.nextLine().trim();
 
 			if (loginPw.length() == 0) {
 				System.out.println("필수 입력란입니다");
@@ -91,7 +78,7 @@ public class MemberController extends Controller {
 			}
 
 			System.out.print("비밀번호 확인 : ");
-			loginPwConfrim = sc.nextLine().trim();
+			loginPwConfrim = Container.sc.nextLine().trim();
 
 			if (loginPw.equals(loginPwConfrim) == false) {
 				System.out.println("비밀번호를 확인해주세요");
@@ -102,7 +89,7 @@ public class MemberController extends Controller {
 
 		while (true) {
 			System.out.print("이름 : ");
-			name = sc.nextLine().trim();
+			name = Container.sc.nextLine().trim();
 
 			if (name.length() == 0) {
 				System.out.println("필수 입력란입니다");
@@ -120,7 +107,7 @@ public class MemberController extends Controller {
 		sql.append(", regDate = NOW()");
 		sql.append(", updateDate = NOW()");
 
-		int id = DBUtil.insert(conn, sql);
+		int id = DBUtil.insert(Container.conn, sql);
 
 		System.out.println(id + "님, 회원가입되셨습니다");
 	}
@@ -140,7 +127,7 @@ public class MemberController extends Controller {
 			countAttempt++;
 			
 			System.out.print("아이디 : ");
-			loginId = sc.nextLine().trim();
+			loginId = Container.sc.nextLine().trim();
 
 			if (loginId.length() == 0) {
 				System.out.println("필수 입력란입니다");
@@ -153,7 +140,7 @@ public class MemberController extends Controller {
 			sql.append("FROM `member`");
 			sql.append("WHERE loginId = ?", loginId);
 
-			Map<String, Object> memberMap = DBUtil.selectRow(conn, sql);
+			Map<String, Object> memberMap = DBUtil.selectRow(Container.conn, sql);
 
 			if (memberMap.isEmpty()) {
 				System.out.println("일치하는 회원이 없습니다");
@@ -171,7 +158,7 @@ public class MemberController extends Controller {
 			}
 			countAttempt++;
 			System.out.print("비밀번호 : ");
-			loginPw = sc.nextLine().trim();
+			loginPw = Container.sc.nextLine().trim();
 
 			if (loginPw.length() == 0) {
 				System.out.println("필수 입력란입니다");

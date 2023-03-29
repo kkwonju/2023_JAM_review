@@ -1,14 +1,8 @@
 package kkwo.JAM.controller;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Article;
@@ -16,23 +10,16 @@ import kkwo.JAM.service.ArticleService;
 import kkwo.JAM.service.MemberService;
 import kkwo.JAM.util.DBUtil;
 import kkwo.JAM.util.SecSql;
-import kkwo.JAM.util.Util;
 
 public class ArticleController extends Controller {
 	private String actionMethodName;
 	private String command;
-	private Scanner sc;
 	private ArticleService articleService;
 	private MemberService memberService;
 
-	private Connection conn;
-
-	public ArticleController(Scanner sc, Connection conn) {
+	public ArticleController() {
 		articleService = Container.articleService;
 		memberService = Container.memberService;
-
-		this.sc = sc;
-		this.conn = conn;
 	}
 
 	@Override
@@ -68,9 +55,9 @@ public class ArticleController extends Controller {
 		int memberId = loginedMember.id;
 
 		System.out.print("제목 : ");
-		String title = sc.nextLine();
+		String title = Container.sc.nextLine();
 		System.out.print("내용 : ");
-		String body = sc.nextLine();
+		String body = Container.sc.nextLine();
 
 		SecSql sql = new SecSql();
 
@@ -82,7 +69,7 @@ public class ArticleController extends Controller {
 		sql.append(", regDate = NOW()");
 		sql.append(", updateDate = NOW()");
 
-		int articleId = DBUtil.insert(conn, sql);
+		int articleId = DBUtil.insert(Container.conn, sql);
 		System.out.println(articleId + "번 글이 작성되었습니다");
 	}
 
@@ -94,7 +81,7 @@ public class ArticleController extends Controller {
 		sql.append("FROM article");
 		sql.append("ORDER BY id DESC");
 
-		List<Map<String, Object>> articlesMaps = DBUtil.selectRows(conn, sql);
+		List<Map<String, Object>> articlesMaps = DBUtil.selectRows(Container.conn, sql);
 		List<Article> articles = new ArrayList<>();
 
 		for (Map<String, Object> articleMap : articlesMaps) {
@@ -127,7 +114,7 @@ public class ArticleController extends Controller {
 		sql.append("FROM article");
 		sql.append("WHERE id = ?", id);
 
-		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+		Map<String, Object> articleMap = DBUtil.selectRow(Container.conn, sql);
 
 		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -135,7 +122,7 @@ public class ArticleController extends Controller {
 		}
 
 		Article article = new Article(articleMap);
-
+		
 		System.out.println("번호  : " + article.id);
 		System.out.println("작성자 id  : " + article.memberId);
 		System.out.println("조회  : " + article.hit);
@@ -159,7 +146,7 @@ public class ArticleController extends Controller {
 		sql.append("FROM article");
 		sql.append("WHERE id = ?", articleId);
 
-		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+		Map<String, Object> articleMap = DBUtil.selectRow(Container.conn, sql);
 
 		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -174,9 +161,9 @@ public class ArticleController extends Controller {
 		}
 
 		System.out.print("새 제목 : ");
-		String newTitle = sc.nextLine();
+		String newTitle = Container.sc.nextLine();
 		System.out.print("새 내용 : ");
-		String newBody = sc.nextLine();
+		String newBody = Container.sc.nextLine();
 
 		sql = new SecSql();
 
@@ -186,7 +173,7 @@ public class ArticleController extends Controller {
 		sql.append(", updateDate = NOW()");
 		sql.append("WHERE id = ?", articleId);
 
-		DBUtil.update(conn, sql);
+		DBUtil.update(Container.conn, sql);
 
 		System.out.println(articleId + "번 글이 수정되었습니다");
 	}
@@ -205,7 +192,7 @@ public class ArticleController extends Controller {
 		sql.append("FROM article");
 		sql.append("WHERE id = ?", articleId);
 
-		Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+		Map<String, Object> articleMap = DBUtil.selectRow(Container.conn, sql);
 
 		if (articleMap.isEmpty()) {
 			System.out.println("해당 게시글이 존재하지 않습니다");
@@ -229,7 +216,7 @@ public class ArticleController extends Controller {
 		sql.append("DELETE FROM article");
 		sql.append("WHERE id = ?", articleId);
 
-		DBUtil.delete(conn, sql);
+		DBUtil.delete(Container.conn, sql);
 
 		articleService.remove(article);
 		System.out.println(articleId + "번 글이 삭제되었습니다");

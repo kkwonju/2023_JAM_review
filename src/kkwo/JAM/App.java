@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import kkwo.JAM.container.Container;
 import kkwo.JAM.controller.ArticleController;
 import kkwo.JAM.controller.Controller;
 import kkwo.JAM.controller.MemberController;
@@ -12,17 +13,19 @@ import kkwo.JAM.controller.MemberController;
 public class App {
 	String controllerName;
 	String actionMethodName;
-	Connection conn;
+	Controller controller;
 	
 	public void start() {
 		System.out.println("== 프로그램 시작 ==");
-		Scanner sc = new Scanner(System.in);
+		Container.sc  = new Scanner(System.in);
+		
+		Container.init();
 
 		while (true) {
 			System.out.print("명령어 > ");
-			String command = sc.nextLine().trim();
+			String command = Container.sc.nextLine().trim();
 
-			conn = null;
+			Connection conn = null;
 
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
@@ -34,8 +37,9 @@ public class App {
 
 			try {
 				conn = DriverManager.getConnection(url, "root", "");
+				Container.conn = conn;
 
-				int actionResult = action(command, sc);
+				int actionResult = action(command);
 
 				if (actionResult == -1) {
 					System.out.println("프로그램 종료");
@@ -55,11 +59,7 @@ public class App {
 		}
 	}
 
-	private int action(String command, Scanner sc) {
-
-		ArticleController articleController = new ArticleController(sc, conn);
-		MemberController memberController = new MemberController(sc, conn);
-		Controller controller;
+	private int action(String command) {
 
 		if (command.length() == 0) {
 			System.out.println("명령어를 입력해주세요");
@@ -82,9 +82,9 @@ public class App {
 		controller = null;
 
 		if (controllerName.equals("article")) {
-			controller = articleController;
+			controller = Container.articleController;
 		} else if (controllerName.equals("member")) {
-			controller = memberController;
+			controller = Container.memberController;
 		} else {
 			System.out.println("명령어를 확인해주세요");
 			return 0;
