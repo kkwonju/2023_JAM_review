@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class Article extends Dto{
 	public int id;
-	public LocalDateTime regDate;
-	public LocalDateTime updateDate;
 	public int hit;
 	public int memberId;
 	public String title;
 	public String body;
+	public LocalDateTime regDate;
+	public LocalDateTime updateDate;
 
 	public Article(int id, int memberId, String title, String body, LocalDateTime regDate, LocalDateTime updateDate) {
 		this(id, 0, memberId, title, body, regDate, updateDate);
@@ -28,6 +28,7 @@ public class Article extends Dto{
 
 	public Article(Map<String, Object> articleMap) {
 		this.id = (int) articleMap.get("id");
+		this.hit = (int) articleMap.get("hit");
 		this.memberId = (int) articleMap.get("memberId");
 		this.title = (String) articleMap.get("title");
 		this.body = (String) articleMap.get("body");

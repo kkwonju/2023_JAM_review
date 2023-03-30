@@ -32,5 +32,9 @@ public class ArticleService {
 	public Article getArticleById(int articleId) {
 		return articleDao.getArticleById(articleId);
 	}
+
+	public void increaseViewCount(int articleId) {
+		articleDao.increaseViewCount(articleId);
+	}
 	
 }

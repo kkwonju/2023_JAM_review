@@ -96,6 +96,8 @@ public class ArticleController extends Controller {
 		System.out.println("내용  : " + article.body);
 		System.out.println("작성일  : " + article.regDate);
 		System.out.println("수정일  : " + article.updateDate);
+		
+		articleService.increaseViewCount(articleId);
 	}
 
 	private void doModify() {

@@ -80,5 +80,15 @@ public class ArticleDao extends Dao {
 
 		return articleList;
 	}
+	/** 조회수 증가 */
+	public void increaseViewCount(int articleId) {
+		SecSql sql = new SecSql();
+		
+		sql.append("UPDATE article");
+		sql.append("SET hit = hit + 1");
+		sql.append("WHERE id = ?", articleId);
+		
+		DBUtil.update(Container.conn, sql);
+	}
 
 }
