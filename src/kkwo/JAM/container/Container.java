@@ -21,6 +21,7 @@ public class Container {
 	public static MemberController memberController;
 	
 	public static Connection conn;
+	
 	public static Scanner sc;
 	
 	public static void init() {

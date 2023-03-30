@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Member extends Dto{
+	public int id;
+	public LocalDateTime regDate;
+	public LocalDateTime updateDate;
 	public String loginId;
 	public String loginPw;
 	public String name;
@@ -28,6 +31,7 @@ public class Member extends Dto{
 	
 	@Override
 	public String toString() {
-		return "Member [loginId=" + loginId + ", loginPW=" + loginPw + ", name=" + name + "]";
+		return "Member [id=" + id + ", regDate=" + regDate + ", updateDate=" + updateDate + ", loginId=" + loginId
+				+ ", loginPw=" + loginPw + ", name=" + name + "]";
 	}
 }

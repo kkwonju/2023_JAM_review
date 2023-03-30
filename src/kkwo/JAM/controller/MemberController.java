@@ -37,14 +37,14 @@ public class MemberController extends Controller {
 			break;
 		}
 	}
-
+	
 	private void doJoin() {
 		String loginId = null;
 		String loginPw = null;
-		String loginPwConfrim = null;
 		String name = null;
-
-		while (true) {
+		
+		boolean isValidInput = false;
+		while (!isValidInput) {
 			System.out.print("아이디 : ");
 			loginId = Container.sc.nextLine().trim();
 
@@ -53,22 +53,15 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			SecSql sql = new SecSql();
-
-			sql.append("SELECT COUNT(*)");
-			sql.append("FROM `member`");
-			sql.append("WHERE loginId = ?", loginId);
-
-			int countMember = DBUtil.selectRowIntValue(Container.conn, sql);
-
-			if (countMember != 0) {
+			if (memberService.isExistingLoginId(loginId)) {
 				System.out.println("이미 존재하는 아이디입니다");
 				continue;
 			}
-			break;
+			isValidInput = true;
 		}
 
-		while (true) {
+		isValidInput = false;
+		while (!isValidInput) {
 			System.out.print("비밀번호 : ");
 			loginPw = Container.sc.nextLine().trim();
 
@@ -78,16 +71,17 @@ public class MemberController extends Controller {
 			}
 
 			System.out.print("비밀번호 확인 : ");
-			loginPwConfrim = Container.sc.nextLine().trim();
+			String loginPwConfrim = Container.sc.nextLine().trim();
 
-			if (loginPw.equals(loginPwConfrim) == false) {
+			if (!loginPw.equals(loginPwConfrim)) {
 				System.out.println("비밀번호를 확인해주세요");
 				continue;
 			}
-			break;
+			isValidInput = true;
 		}
 
-		while (true) {
+		isValidInput = false;
+		while (!isValidInput) {
 			System.out.print("이름 : ");
 			name = Container.sc.nextLine().trim();
 
@@ -95,21 +89,12 @@ public class MemberController extends Controller {
 				System.out.println("필수 입력란입니다");
 				continue;
 			}
-			break;
+			isValidInput = true;
 		}
+		
+		int memberId = memberService.doJoin(loginId, loginPw, name);
 
-		SecSql sql = new SecSql();
-
-		sql.append("INSERT INTO `member`");
-		sql.append("SET loginId = ?", loginId);
-		sql.append(", loginPw = ?", loginPw);
-		sql.append(", `name` = ?", name);
-		sql.append(", regDate = NOW()");
-		sql.append(", updateDate = NOW()");
-
-		int id = DBUtil.insert(Container.conn, sql);
-
-		System.out.println(id + "님, 회원가입되셨습니다");
+		System.out.println(memberId + "님, 회원가입되셨습니다");
 	}
 
 	private void doLogin() {
@@ -117,15 +102,9 @@ public class MemberController extends Controller {
 		String loginPw = null;
 		Member member = null;
 		
-		int countAttempt = 0;
-		int attemptLimit = 3;
-		while (true) {
-			if(countAttempt == attemptLimit) {
-				System.out.println("아이디를 확인 후 다시 시도해주세요");
-				return;
-			}
-			countAttempt++;
-			
+		boolean isValidInput = false;
+		
+		while(!isValidInput){
 			System.out.print("아이디 : ");
 			loginId = Container.sc.nextLine().trim();
 
@@ -134,29 +113,17 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			SecSql sql = new SecSql();
+			member = memberService.getMemberByLoginId(loginId);
 
-			sql.append("SELECT *");
-			sql.append("FROM `member`");
-			sql.append("WHERE loginId = ?", loginId);
-
-			Map<String, Object> memberMap = DBUtil.selectRow(Container.conn, sql);
-
-			if (memberMap.isEmpty()) {
+			if (member == null) {
 				System.out.println("일치하는 회원이 없습니다");
 				continue;
 			}
-			
-			member = new Member(memberMap);
-			break;
+			isValidInput = true;
 		}
-		countAttempt = 0;
-		while (true) {
-			if(countAttempt == attemptLimit) {
-				System.out.println("비밀번호를 확인 후 다시 시도해주세요");
-				return;
-			}
-			countAttempt++;
+		
+		isValidInput = false;
+		while(!isValidInput){
 			System.out.print("비밀번호 : ");
 			loginPw = Container.sc.nextLine().trim();
 
@@ -165,11 +132,11 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			if (member.loginPw.equals(loginPw) == false) {
+			if (!member.loginPw.equals(loginPw)) {
 				System.out.println("비밀번호가 틀렸습니다");
 				continue;
 			}
-			break;
+			isValidInput = true;
 		}
 
 		loginedMember = member;

@@ -13,14 +13,6 @@ public class ArticleService {
 		this.articleDao = Container.articleDao;
 	}
 
-	public int setNewId() {
-		return articleDao.setNewId();
-	}
-
-	public void increaseViewCount(Article article) {
-		articleDao.increaseViewCount(article);
-	}
-
 	public int doWrite(int memberId, String title, String body) {
 		return articleDao.doWrite(memberId, title, body);
 	}

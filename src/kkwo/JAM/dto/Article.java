@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Article extends Dto{
+	public int id;
+	public LocalDateTime regDate;
+	public LocalDateTime updateDate;
 	public int hit;
 	public int memberId;
 	public String title;
@@ -34,6 +37,7 @@ public class Article extends Dto{
 
 	@Override
 	public String toString() {
-		return "Article [hit=" + hit + ", memberId=" + memberId + ", title=" + title + ", body=" + body + "]";
+		return "Article [id=" + id + ", regDate=" + regDate + ", updateDate=" + updateDate + ", hit=" + hit
+				+ ", memberId=" + memberId + ", title=" + title + ", body=" + body + "]";
 	}
 }

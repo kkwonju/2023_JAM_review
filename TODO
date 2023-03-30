@@ -16,3 +16,4 @@
     14. Container 수정
     15. DB 접근 필요한 기능들 DAO로 이전
     15-1. article 기능 이전
+    15-2. member 기능 이전

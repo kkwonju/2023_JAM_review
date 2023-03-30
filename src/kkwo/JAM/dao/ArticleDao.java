@@ -11,15 +11,6 @@ import kkwo.JAM.util.SecSql;
 
 public class ArticleDao extends Dao {
 
-	public int setNewId() {
-		int id = lastId + 1;
-		return id;
-	}
-
-	public void increaseViewCount(Article article) {
-		article.hit++;
-	}
-	
 	/** article 데이터 생성 */
 	public int doWrite(int memberId, String title, String body) {
 		SecSql sql = new SecSql();
@@ -34,7 +25,6 @@ public class ArticleDao extends Dao {
 		
 		return DBUtil.insert(Container.conn, sql);
 	}
-	
 	/** article 데이터 수정 */
 	public void doModify(int articleId, String newTitle, String newBody) {
 		SecSql sql = new SecSql();
@@ -47,7 +37,6 @@ public class ArticleDao extends Dao {
 		
 		DBUtil.update(Container.conn, sql);
 	}
-	
 	/** article 데이터 삭제 */
 	public void doDelete(int articleId) {
 		SecSql sql = new SecSql();
@@ -57,7 +46,6 @@ public class ArticleDao extends Dao {
 		
 		DBUtil.delete(Container.conn, sql);
 	}
-	
 	/** id 일치하는 데이터 불러오기 */
 	public Article getArticleById(int articleId) {
 		SecSql sql = new SecSql();
@@ -75,7 +63,6 @@ public class ArticleDao extends Dao {
 		
 		return article;
 	}
-	
 	/** article 목록 불러오기 */
 	public List<Article> getArticleList() {
 		SecSql sql = new SecSql();

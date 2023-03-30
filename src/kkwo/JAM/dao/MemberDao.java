@@ -1,47 +1,50 @@
 package kkwo.JAM.dao;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
+import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
+import kkwo.JAM.util.DBUtil;
+import kkwo.JAM.util.SecSql;
 
-public class MemberDao extends Dao{
-	public List<Member> members;
-	
-	public MemberDao() {
-		members = new ArrayList<>();
-	}
+public class MemberDao extends Dao {
 
-	public void add(Member member) {
-		members.add(member);
-		lastId++;
-	}
+	/** 회원가입 */
+	public int doJoin(String loginId, String loginPw, String name) {
+		SecSql sql = new SecSql();
 
-	public List<Member> getMembers() {
-		return members;
-	}
+		sql.append("INSERT INTO `member`");
+		sql.append("SET loginId = ?", loginId);
+		sql.append(", loginPw = ?", loginPw);
+		sql.append(", `name` = ?", name);
+		sql.append(", regDate = NOW()");
+		sql.append(", updateDate = NOW()");
 
-	public int setNewId() {
-		int id = lastId + 1;
-		return id;
+		int memberId = DBUtil.insert(Container.conn, sql);
+		return memberId;
 	}
-	
-	public boolean isJoinableLoginId(String loginId) {
-		for (Member member : members) {
-			/* 이미 아이디가 존재한다면 false 반환 */
-			if (member.loginId.equals(loginId)) {
-				return false;
-			}
-		}
-		return true;
+	/** 아이디 중복 검사 */
+	public boolean isExistingLoginId(String loginId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM `member`");
+		sql.append("WHERE loginId = ?", loginId);
+
+		boolean isExisting = DBUtil.selectRowBooleanValue(Container.conn, sql);
+		return isExisting;
 	}
-	
+	/** loginId 일치하는 회원 찾기 */
 	public Member getMemberByLoginId(String loginId) {
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return member;
-			}
-		}
-		return null;
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM `member`");
+		sql.append("WHERE loginId = ?", loginId);
+
+		Map<String, Object> memberMap = DBUtil.selectRow(Container.conn, sql);
+		Member member = new Member(memberMap);
+		
+		return member;
 	}
 }
