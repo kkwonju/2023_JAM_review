@@ -36,5 +36,9 @@ public class ArticleService {
 	public void increaseViewCount(int articleId) {
 		articleDao.increaseViewCount(articleId);
 	}
+
+	public List<Article> searchArticlesByTitle(String searchKeyword) {
+		return articleDao.searchArticlesByTitle(searchKeyword);
+	}
 	
 }

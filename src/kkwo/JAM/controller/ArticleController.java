@@ -60,7 +60,14 @@ public class ArticleController extends Controller {
 	}
 
 	private void showList() {
+		String[] commDiv = command.split(" ");
 		List<Article> articleList = articleService.getArticleList();
+		
+		if(commDiv.length > 2) {
+			String searchKeyword = commDiv[2];
+			articleList = articleService.searchArticlesByTitle(searchKeyword);
+		}
+		
 
 		if (articleList.size() == 0) {
 			System.out.println("게시물이 없습니다");

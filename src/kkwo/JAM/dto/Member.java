@@ -4,12 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Member extends Dto{
-	public int id;
 	public String loginId;
 	public String loginPw;
 	public String name;
-	public LocalDateTime regDate;
-	public LocalDateTime updateDate;
 
 	public Member(int id, String loginId, String loginPw, String name,LocalDateTime regDate, LocalDateTime updateDate) {
 		this.id = id;

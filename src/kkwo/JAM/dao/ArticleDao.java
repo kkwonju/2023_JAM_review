@@ -80,6 +80,18 @@ public class ArticleDao extends Dao {
 
 		return articleList;
 	}
+	/** 검색된 게시물 불러오기 */
+	public List<Article> searchArticlesByTitle(String searchKeyword) {
+		
+		List<Article> articleList = getArticleList();
+		List<Article> articles = new ArrayList<>();
+		for(Article article : articleList) {
+			if(article.title.contains(searchKeyword)) {
+				articles.add(article);
+			}
+		}
+		return articles;
+	}
 	/** 조회수 증가 */
 	public void increaseViewCount(int articleId) {
 		SecSql sql = new SecSql();
@@ -90,5 +102,4 @@ public class ArticleDao extends Dao {
 		
 		DBUtil.update(Container.conn, sql);
 	}
-
 }

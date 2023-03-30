@@ -4,13 +4,10 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Article extends Dto{
-	public int id;
 	public int hit;
 	public int memberId;
 	public String title;
 	public String body;
-	public LocalDateTime regDate;
-	public LocalDateTime updateDate;
 
 	public Article(int id, int memberId, String title, String body, LocalDateTime regDate, LocalDateTime updateDate) {
 		this(id, 0, memberId, title, body, regDate, updateDate);
