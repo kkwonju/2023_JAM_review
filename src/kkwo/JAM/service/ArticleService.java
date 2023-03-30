@@ -1,6 +1,5 @@
 package kkwo.JAM.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import kkwo.JAM.container.Container;
@@ -14,33 +13,32 @@ public class ArticleService {
 		this.articleDao = Container.articleDao;
 	}
 
-	public void add(Article article) {
-		articleDao.add(article);
-	}
-
 	public int setNewId() {
 		return articleDao.setNewId();
-	}
-
-	public List<Article> getArticles() {
-		return articleDao.getArticles();
-	}
-
-	public Article getArticleById(int id) {
-		return articleDao.getArticleById(id);
-	}
-
-	public void remove(Article article) {
-		articleDao.remove(article);
-	}
-
-	public void doModify(Article article, String newTitle, String newBody, LocalDateTime updateDate) {
-		articleDao.doModify(article, newTitle, newBody, updateDate);
 	}
 
 	public void increaseViewCount(Article article) {
 		articleDao.increaseViewCount(article);
 	}
+
+	public int doWrite(int memberId, String title, String body) {
+		return articleDao.doWrite(memberId, title, body);
+	}
+
+	public List<Article> getArticleList() {
+		return articleDao.getArticleList();
+	}
+
+	public void doModify(int articleId, String newTitle, String newBody) {
+		articleDao.doModify(articleId, newTitle, newBody);
+	}
+
+	public void doDelete(int articleId) {
+		articleDao.doDelete(articleId);
+	}
 	
+	public Article getArticleById(int articleId) {
+		return articleDao.getArticleById(articleId);
+	}
 	
 }
