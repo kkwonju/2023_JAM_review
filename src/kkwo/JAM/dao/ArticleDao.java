@@ -51,7 +51,7 @@ public class ArticleDao extends Dao {
 
 		sql.append("SELECT A.*,B.name AS extra__writer");
 		sql.append("FROM article AS A");
-		sql.append("INNER JOIN `member` AS B");
+		sql.append("LEFT OUTER JOIN `member` AS B");
 		sql.append("ON A.memberId = B.id");		
 		sql.append("WHERE A.id = ?", articleId);
 
@@ -75,7 +75,7 @@ public class ArticleDao extends Dao {
 
 		sql.append("SELECT A.*, B.name AS extra__writer");
 		sql.append("FROM article AS A");
-		sql.append("INNER JOIN `member` AS B");
+		sql.append("LEFT OUTER JOIN `member` AS B");
 		sql.append("ON A.memberId = B.id");		
 		if (searchKeyword != null && searchKeyword.length() > 0) {
 			sql.append("WHERE title LIKE CONCAT('%',?,'%')", searchKeyword);
