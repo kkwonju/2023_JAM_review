@@ -8,6 +8,8 @@ public class Article extends Dto{
 	public int memberId;
 	public String title;
 	public String body;
+	
+	public String extra__writer;
 
 	public Article(int id, int memberId, String title, String body, LocalDateTime regDate, LocalDateTime updateDate) {
 		this(id, 0, memberId, title, body, regDate, updateDate);
@@ -31,6 +33,10 @@ public class Article extends Dto{
 		this.body = (String) articleMap.get("body");
 		this.regDate = (LocalDateTime) articleMap.get("regDate");
 		this.updateDate = (LocalDateTime) articleMap.get("updateDate");
+		
+		if(articleMap.get("extra__writer") != null) {
+			this.extra__writer = (String)articleMap.get("extra__writer");
+		}
 	}
 
 	@Override

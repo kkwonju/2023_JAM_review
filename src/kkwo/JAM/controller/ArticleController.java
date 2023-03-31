@@ -81,9 +81,9 @@ public class ArticleController extends Controller {
 			return;
 		}
 
-		System.out.println("  번호  /  제목  / writer id /  조회  ");
+		System.out.println("  번호  /  제목  / 작성자 /  조회  ");
 		for (Article article : articleList) {
-			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, article.memberId,
+			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, article.extra__writer,
 					article.hit);
 		}
 	}
@@ -104,7 +104,7 @@ public class ArticleController extends Controller {
 		}
 
 		System.out.println("번호  : " + article.id);
-		System.out.println("작성자 id  : " + article.memberId);
+		System.out.println("작성자  : " + article.extra__writer);
 		System.out.println("조회  : " + article.hit);
 		System.out.println("제목  : " + article.title);
 		System.out.println("내용  : " + article.body);

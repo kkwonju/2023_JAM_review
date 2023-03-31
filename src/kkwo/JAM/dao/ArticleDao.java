@@ -10,7 +10,6 @@ import kkwo.JAM.util.DBUtil;
 import kkwo.JAM.util.SecSql;
 
 public class ArticleDao extends Dao {
-
 	/** article 데이터 생성 */
 	public int doWrite(int memberId, String title, String body) {
 		SecSql sql = new SecSql();
@@ -25,7 +24,6 @@ public class ArticleDao extends Dao {
 
 		return DBUtil.insert(Container.conn, sql);
 	}
-
 	/** article 데이터 수정 */
 	public void doModify(int articleId, String newTitle, String newBody) {
 		SecSql sql = new SecSql();
@@ -38,7 +36,6 @@ public class ArticleDao extends Dao {
 
 		DBUtil.update(Container.conn, sql);
 	}
-
 	/** article 데이터 삭제 */
 	public void doDelete(int articleId) {
 		SecSql sql = new SecSql();
@@ -48,14 +45,15 @@ public class ArticleDao extends Dao {
 
 		DBUtil.delete(Container.conn, sql);
 	}
-
 	/** id 일치하는 데이터 불러오기 */
 	public Article getArticleById(int articleId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT *");
-		sql.append("FROM article");
-		sql.append("WHERE id = ?", articleId);
+		sql.append("SELECT A.*,B.name AS extra__writer");
+		sql.append("FROM article AS A");
+		sql.append("INNER JOIN `member` AS B");
+		sql.append("ON A.memberId = B.id");		
+		sql.append("WHERE A.id = ?", articleId);
 
 		Map<String, Object> articleMap = DBUtil.selectRow(Container.conn, sql);
 
@@ -66,7 +64,6 @@ public class ArticleDao extends Dao {
 
 		return article;
 	}
-
 	/** article 목록 불러오기 */
 	public List<Article> getArticleList(Map<String, Object> args) {
 
@@ -76,8 +73,10 @@ public class ArticleDao extends Dao {
 
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT *");
-		sql.append("FROM article");
+		sql.append("SELECT A.*, B.name AS extra__writer");
+		sql.append("FROM article AS A");
+		sql.append("INNER JOIN `member` AS B");
+		sql.append("ON A.memberId = B.id");		
 		if (searchKeyword != null && searchKeyword.length() > 0) {
 			sql.append("WHERE title LIKE CONCAT('%',?,'%')", searchKeyword);
 		}
@@ -90,23 +89,8 @@ public class ArticleDao extends Dao {
 		for (Map<String, Object> articleMap : articlesMaps) {
 			articleList.add(new Article(articleMap));
 		}
-
 		return articleList;
 	}
-
-	/** 검색된 게시물 불러오기 */
-//	public List<Article> searchArticlesByTitle(String searchKeyword) {
-//
-//		List<Article> articleList = getArticleList();
-//		List<Article> articles = new ArrayList<>();
-//		for (Article article : articleList) {
-//			if (article.title.contains(searchKeyword)) {
-//				articles.add(article);
-//			}
-//		}
-//		return articles;
-//	}
-
 	/** 조회수 증가 */
 	public void increaseViewCount(int articleId) {
 		SecSql sql = new SecSql();

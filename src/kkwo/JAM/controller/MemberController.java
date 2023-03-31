@@ -148,5 +148,4 @@ public class MemberController extends Controller {
 		loginedMember = null;
 		System.out.println("로그아웃되었습니다");
 	}
-
 }
