@@ -1,6 +1,8 @@
 package kkwo.JAM.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dao.ArticleDao;
@@ -17,8 +19,16 @@ public class ArticleService {
 		return articleDao.doWrite(memberId, title, body);
 	}
 
-	public List<Article> getArticleList() {
-		return articleDao.getArticleList();
+	public List<Article> getArticleList(int page, int maxArticlesPerPage, String searchKeyword) {
+		
+		int articleOffset = (page - 1) * maxArticlesPerPage;
+		
+		Map<String, Object> args = new HashMap<>();
+		args.put("articleOffset", articleOffset);
+		args.put("maxArticlesPerPage", maxArticlesPerPage);
+		args.put("searchKeyword", searchKeyword);
+		
+		return articleDao.getArticleList(args);
 	}
 
 	public void doModify(int articleId, String newTitle, String newBody) {
@@ -37,8 +47,8 @@ public class ArticleService {
 		articleDao.increaseViewCount(articleId);
 	}
 
-	public List<Article> searchArticlesByTitle(String searchKeyword) {
-		return articleDao.searchArticlesByTitle(searchKeyword);
-	}
+//	public List<Article> searchArticlesByTitle(String searchKeyword) {
+//		return articleDao.searchArticlesByTitle(searchKeyword);
+//	}
 	
 }

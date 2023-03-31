@@ -60,14 +60,21 @@ public class ArticleController extends Controller {
 	}
 
 	private void showList() {
+		int page = 1;
+		int maxArticlesPerPage = 5;
+		String searchKeyword = null;
+
 		String[] commDiv = command.split(" ");
-		List<Article> articleList = articleService.getArticleList();
-		
-		if(commDiv.length > 2) {
-			String searchKeyword = commDiv[2];
-			articleList = articleService.searchArticlesByTitle(searchKeyword);
+
+		if (commDiv.length > 2) {
+			page = Integer.parseInt(commDiv[2]);
+		}
+		if (commDiv.length > 3) {
+			searchKeyword = commDiv[3];
 		}
 		
+		List<Article> articleList = articleService.getArticleList(page, maxArticlesPerPage, searchKeyword);
+//		articleList = articleService.searchArticlesByTitle(searchKeyword);
 
 		if (articleList.size() == 0) {
 			System.out.println("게시물이 없습니다");
@@ -103,7 +110,7 @@ public class ArticleController extends Controller {
 		System.out.println("내용  : " + article.body);
 		System.out.println("작성일  : " + article.regDate);
 		System.out.println("수정일  : " + article.updateDate);
-		
+
 		articleService.increaseViewCount(articleId);
 	}
 
