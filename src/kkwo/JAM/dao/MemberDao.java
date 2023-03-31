@@ -43,8 +43,19 @@ public class MemberDao extends Dao {
 		sql.append("WHERE loginId = ?", loginId);
 
 		Map<String, Object> memberMap = DBUtil.selectRow(Container.conn, sql);
+		if(memberMap.isEmpty()) {
+			return null;
+		}
 		Member member = new Member(memberMap);
 		
 		return member;
+	}
+	public void doDelete(int loginedMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("DELETE FROM `member`");
+		sql.append("WHERE id = ?", loginedMemberId);
+		
+		DBUtil.delete(Container.conn, sql);
 	}
 }

@@ -1,12 +1,8 @@
 package kkwo.JAM.controller;
 
-import java.util.Map;
-
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Member;
 import kkwo.JAM.service.MemberService;
-import kkwo.JAM.util.DBUtil;
-import kkwo.JAM.util.SecSql;
 
 public class MemberController extends Controller {
 	private String actionMethodName;
@@ -25,6 +21,9 @@ public class MemberController extends Controller {
 		switch (actionMethodName) {
 		case "join":
 			doJoin();
+			break;
+		case "delete":
+			doDelete();
 			break;
 		case "login":
 			doLogin();
@@ -96,15 +95,28 @@ public class MemberController extends Controller {
 
 		System.out.println(memberId + "님, 회원가입되셨습니다");
 	}
-
+	
+	private void doDelete() {
+		memberService.doDelete(loginedMember.id);
+		System.out.println(loginedMember.loginId + "님, 탈퇴되었습니다");
+		loginedMember = null;
+	}
+	
 	private void doLogin() {
 		String loginId = null;
 		String loginPw = null;
 		Member member = null;
 		
 		boolean isValidInput = false;
-		
+		int loginAttempt = 0;
+		int maxAttempt = 3;
 		while(!isValidInput){
+			if(loginAttempt == maxAttempt) {
+				System.out.println("아이디를 확인 후 다시 시도해주세요");
+				return;
+			}
+			loginAttempt++;
+			
 			System.out.print("아이디 : ");
 			loginId = Container.sc.nextLine().trim();
 
@@ -123,7 +135,14 @@ public class MemberController extends Controller {
 		}
 		
 		isValidInput = false;
+		loginAttempt = 0;
 		while(!isValidInput){
+			if(loginAttempt == maxAttempt) {
+				System.out.println("비밀번호를 확인 후 다시 시도해주세요");
+				return;
+			}
+			loginAttempt++;
+			
 			System.out.print("비밀번호 : ");
 			loginPw = Container.sc.nextLine().trim();
 

@@ -96,6 +96,7 @@ public class App {
 		case "article/modify":
 		case "article/delete":
 		case "member/logout":
+		case "member/delete":
 			if (!Controller.isLoginCheck()) {
 				System.out.println("로그인 후 이용해주세요");
 				return 0;
