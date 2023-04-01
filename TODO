@@ -1,16 +1,25 @@
 	TODO
 	
     1. 게시판 기능 구현, MVC 구조
+        a. ArrayList에 데이터를 저장
+        b. 게시글 작성, 수정, 읽기, 삭제
+        c. 회원 가입
     2. mysql connector j 추가
+        a. MySql DB와 연결 및 상호작용을 위한 JDBC 드라이버
     3. JDBC 연결 테스트
     4. JDBC Insert 테스트
     5. 게시물 작성 시 DB에 INSERT
+        a. articleController에 구현
     6. 회원가입 시 DB에 INSERT
+        a. memberController에 구현
     7. 로그인 시 DB에서 member 데이터 불러오기
     8. 로그인 로그아웃 기능 구현
+        a. 아이디 중복검사, 비밀번호 2차검사
     9. 목록 출력 시 DB에서 복수개의 데이터 불러오기
     10. 게시글 상세보기 시 DB에서 데이터 불러오기
     11. DBUtil, SecSql, SqlErrorException 추가
+        a. JDBC 기반 java 데이터베이스 라이브러리
+        b. 코드 가독성, 유지 보수성 향상
     12. DBUtil 활용
     13. 로그인 시도 횟수 3회 제한
     14. Container 수정
@@ -18,8 +27,15 @@
     15-1. article 기능 이전
     15-2. member 기능 이전
     16. 조회수 기능 추가
+        a. 게시글 상세보기 시 조회수 1 증가
     17. 키워드 검색 기능 추가
+        a. 키워드가 포함된 title을 담고있는 데이터 출력
     18. 페이징 구현, 키워드 검색과 통합
+        a. 한페이지 당 최대 출력 게시물 제한
+        b. 중복기능 통합
     19. list, detail에 memberId가 아닌 작성자 이름 출력
     20. 탈퇴한 회원 게시물에 탈퇴했음 알려주기
+        a. LEFT OUTER JOIN
+        b. 없는 데이터 null로 표현
     21. 회원 탈퇴 기능 구현
+    22. 회원 정보 수정 기능 구현

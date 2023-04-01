@@ -26,4 +26,8 @@ public class MemberService {
 	public void doDelete(int loginedMemberId) {
 		memberDao.doDelete(loginedMemberId);
 	}
+
+	public void doModify(int loginedMemberId, String newLoginPw, String newName) {
+		memberDao.doModify(loginedMemberId, newLoginPw, newName);
+	}
 }
