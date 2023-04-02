@@ -180,6 +180,26 @@ public class MemberController extends Controller {
 		String newLoginPw = null;
 		String newName = null;
 		boolean isValidInput;
+		
+		int verifyAttempts = 1;
+		int maxVerifyAttempts = 3;
+		while(true) {
+			if(verifyAttempts > maxVerifyAttempts) {
+				System.out.println("비밀번호를 확인 후 다시 시도해주세요");
+				return;
+			}
+			System.out.print("비밀번호 : ");
+			String loginPwConfirm = Container.sc.nextLine();
+			if(!loginedMember.loginPw.equals(loginPwConfirm)) {
+				System.out.println("비밀번호가 틀립니다");
+				continue;
+			}
+			if(loginedMember.loginPw.equals(loginPwConfirm)) {
+				break;
+			} else {
+				verifyAttempts++;
+			}
+		}
 
 		while (true) {
 			System.out.print("수정할 정보를 선택해주세요\n1. 비밀번호\n2. 이름\n3. 결정\n입력 : ");
@@ -191,10 +211,14 @@ public class MemberController extends Controller {
 					memberService.doModify(loginedMember.id, newLoginPw, newName);
 					loginedMember = memberService.getMemberByLoginId(loginedMember.loginId);
 					System.out.println("수정되었습니다");
-					break;
+					if(newLoginPw != null) {
+						loginedMember = null;
+						System.out.println("다시 로그인해주세요");
+					}
+					return;
 				} else {
 					System.out.println("변경사항이 없습니다");
-					break;
+					return;
 				}
 			}
 
