@@ -22,17 +22,20 @@ public class MemberController extends Controller {
 		case "join":
 			doJoin();
 			break;
-		case "modify":
-			doModify();
-			break;
-		case "delete":
-			doDelete();
-			break;
 		case "login":
 			doLogin();
 			break;
 		case "logout":
 			doLogout();
+			break;
+		case "detail":
+			showDetail();
+			break;
+		case "modify":
+			doModify();
+			break;
+		case "delete":
+			doDelete();
 			break;
 		default:
 			System.out.println("존재하지 않는 기능입니다");
@@ -97,12 +100,6 @@ public class MemberController extends Controller {
 		int memberId = memberService.doJoin(loginId, loginPw, name);
 
 		System.out.println(memberId + "님, 회원가입되셨습니다");
-	}
-
-	private void doDelete() {
-		memberService.doDelete(loginedMember.id);
-		System.out.println(loginedMember.loginId + "님, 탈퇴되었습니다");
-		loginedMember = null;
 	}
 
 	private void doLogin() {
@@ -171,6 +168,15 @@ public class MemberController extends Controller {
 		System.out.println("로그아웃되었습니다");
 	}
 
+	private void showDetail() {
+		System.out.println("  회원 정보  ");
+		System.out.println("회원번호 : " + loginedMember.id);
+		System.out.println("아이디 : " + loginedMember.loginId);
+		System.out.println("이름 : " + loginedMember.name);
+		System.out.println("가입일 : " + loginedMember.regDate);
+		System.out.println("수정일 : " + loginedMember.updateDate);
+	}
+	
 	private void doModify() {
 		String newLoginPw = null;
 		String newName = null;
@@ -233,5 +239,11 @@ public class MemberController extends Controller {
 				}
 			}
 		}
+	}
+
+	private void doDelete() {
+		memberService.doDelete(loginedMember.id);
+		System.out.println(loginedMember.loginId + "님, 탈퇴되었습니다");
+		loginedMember = null;
 	}
 }
