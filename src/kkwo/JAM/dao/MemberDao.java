@@ -79,6 +79,7 @@ public class MemberDao extends Dao {
 				sql.append("`name` = ?", newName);			
 			}
 		}
+		sql.append(", updateDate = NOW()");
 		sql.append("WHERE id = ?", loginedMemberId);
 		
 		DBUtil.update(Container.conn, sql);

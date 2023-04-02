@@ -99,7 +99,7 @@ public class MemberController extends Controller {
 
 		int memberId = memberService.doJoin(loginId, loginPw, name);
 
-		System.out.println(memberId + "님, 회원가입되셨습니다");
+		System.out.println(memberId + "번째 회원가입");
 	}
 
 	private void doLogin() {
@@ -160,7 +160,6 @@ public class MemberController extends Controller {
 
 		loginedMember = member;
 		System.out.println("반갑습니다 " + loginedMember.loginId + "님!");
-
 	}
 
 	private void doLogout() {
@@ -190,6 +189,7 @@ public class MemberController extends Controller {
 			if (choice == 3) {
 				if(newLoginPw != null || newName != null) {
 					memberService.doModify(loginedMember.id, newLoginPw, newName);
+					loginedMember = memberService.getMemberByLoginId(loginedMember.loginId);
 					System.out.println("수정되었습니다");
 					break;
 				} else {
