@@ -16,4 +16,8 @@ public class CommentService {
 	public List<Comment> getCommentsByArticleId(int articleId) {
 		return commentDao.getCommentsByArticleId(articleId);
 	}
+
+	public void doWrite(String body, int memberId, int articleId) {
+		commentDao.doWrite(body, memberId, articleId);
+	}
 }

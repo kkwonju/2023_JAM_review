@@ -76,18 +76,18 @@ public class ArticleController extends Controller {
 		if (commDiv.length > 3) {
 			searchKeyword = commDiv[3];
 		}
-		
+
 		List<Article> articleList = articleService.getArticleList(page, maxArticlesPerPage, searchKeyword);
 
 		if (articleList.size() == 0) {
 			System.out.println("게시물이 없습니다");
 			return;
 		}
-		
+
 		System.out.println("  번호  /  제목  / 작성자 /  조회  ");
 		for (Article article : articleList) {
 			String writerName = "(탈퇴)";
-			if(article.extra__writer != null) {
+			if (article.extra__writer != null) {
 				writerName = article.extra__writer;
 			}
 			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, writerName, article.hit);
@@ -110,27 +110,26 @@ public class ArticleController extends Controller {
 		}
 
 		System.out.println("번호  : " + article.id);
-		if(article.extra__writer == null) {
+		if (article.extra__writer == null) {
 			System.out.println("작성자 : (탈퇴한 회원입니다)");
 		} else {
-			System.out.println("작성자  : " + article.extra__writer);			
+			System.out.println("작성자  : " + article.extra__writer);
 		}
 		System.out.println("조회  : " + article.hit);
 		System.out.println("제목  : " + article.title);
 		System.out.println("내용  : " + article.body);
 		System.out.println("작성일  : " + article.regDate);
 		System.out.println("수정일  : " + article.updateDate);
-		
-		
+
 		System.out.println("==== 댓글 ====");
 		List<Comment> comments = commentService.getCommentsByArticleId(articleId);
-		if(comments.size() == 0) {
+		if (comments.size() == 0) {
 			System.out.println("댓글이 없습니다");
 		} else {
-			for(Comment comment : comments) {
+			for (Comment comment : comments) {
 				System.out.println("작성자 : " + comment.extra__writer);
 				System.out.println("내용 : " + comment.body);
-				if(comment.regDate.equals(comment.updateDate)) {
+				if (comment.regDate.equals(comment.updateDate)) {
 					System.out.println("작성일 : " + comment.regDate);
 				} else {
 					System.out.println("수정일 : " + comment.updateDate);
@@ -138,9 +137,33 @@ public class ArticleController extends Controller {
 				System.out.println("---- ---- ----");
 			}
 		}
-		
 		articleService.increaseViewCount(articleId);
-		
+
+		if (!isLoginCheck()) {
+			return;
+		}
+		System.out.print("== 댓글 메뉴 ==\n1. 댓글달기\n2 뒤로가기\n입력 : ");
+		int choice = Container.sc.nextInt();
+		Container.sc.nextLine();
+		switch (choice) {
+		case 1:
+			System.out.print("내용 : ");
+			String body = Container.sc.nextLine().trim();
+			
+			if (body.length() == 0) {
+				System.out.println("댓글을 입력해주세요");
+				break;
+			}
+			
+			commentService.doWrite(body, loginedMember.id, articleId);
+			System.out.println("작성 완료");
+			showDetail();
+		case 2:
+			break;
+		default:
+			break;
+		}
+
 	}
 
 	private void doModify() {
