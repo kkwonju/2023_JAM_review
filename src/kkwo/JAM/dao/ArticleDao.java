@@ -84,9 +84,9 @@ public class ArticleDao extends Dao {
 		sql.append("LIMIT ?, ?", articleOffset, maxArticlesPerPage);
 
 		List<Article> articleList = new ArrayList<>();
-		List<Map<String, Object>> articlesMaps = DBUtil.selectRows(Container.conn, sql);
+		List<Map<String, Object>> articleMaps = DBUtil.selectRows(Container.conn, sql);
 
-		for (Map<String, Object> articleMap : articlesMaps) {
+		for (Map<String, Object> articleMap : articleMaps) {
 			articleList.add(new Article(articleMap));
 		}
 		return articleList;

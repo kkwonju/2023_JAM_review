@@ -4,7 +4,9 @@ import java.util.List;
 
 import kkwo.JAM.container.Container;
 import kkwo.JAM.dto.Article;
+import kkwo.JAM.dto.Comment;
 import kkwo.JAM.service.ArticleService;
+import kkwo.JAM.service.CommentService;
 import kkwo.JAM.service.MemberService;
 
 public class ArticleController extends Controller {
@@ -12,10 +14,12 @@ public class ArticleController extends Controller {
 	private String command;
 	private ArticleService articleService;
 	private MemberService memberService;
+	private CommentService commentService;
 
 	public ArticleController() {
 		articleService = Container.articleService;
 		memberService = Container.memberService;
+		commentService = Container.commentService;
 	}
 
 	@Override
@@ -63,7 +67,6 @@ public class ArticleController extends Controller {
 		int page = 1;
 		int maxArticlesPerPage = 5;
 		String searchKeyword = null;
-		String writerName = "(탈퇴한 회원입니다)";
 
 		String[] commDiv = command.split(" ");
 
@@ -75,7 +78,6 @@ public class ArticleController extends Controller {
 		}
 		
 		List<Article> articleList = articleService.getArticleList(page, maxArticlesPerPage, searchKeyword);
-//		articleList = articleService.searchArticlesByTitle(searchKeyword);
 
 		if (articleList.size() == 0) {
 			System.out.println("게시물이 없습니다");
@@ -84,11 +86,11 @@ public class ArticleController extends Controller {
 		
 		System.out.println("  번호  /  제목  / 작성자 /  조회  ");
 		for (Article article : articleList) {
+			String writerName = "(탈퇴)";
 			if(article.extra__writer != null) {
 				writerName = article.extra__writer;
 			}
-			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, writerName,
-					article.hit);
+			System.out.printf("  %d  /   %s   /  %s  /  %d  \n", article.id, article.title, writerName, article.hit);
 		}
 	}
 
@@ -118,8 +120,27 @@ public class ArticleController extends Controller {
 		System.out.println("내용  : " + article.body);
 		System.out.println("작성일  : " + article.regDate);
 		System.out.println("수정일  : " + article.updateDate);
-
+		
+		
+		System.out.println("==== 댓글 ====");
+		List<Comment> comments = commentService.getCommentsByArticleId(articleId);
+		if(comments.size() == 0) {
+			System.out.println("댓글이 없습니다");
+		} else {
+			for(Comment comment : comments) {
+				System.out.println("작성자 : " + comment.extra__writer);
+				System.out.println("내용 : " + comment.body);
+				if(comment.regDate.equals(comment.updateDate)) {
+					System.out.println("작성일 : " + comment.regDate);
+				} else {
+					System.out.println("수정일 : " + comment.updateDate);
+				}
+				System.out.println("---- ---- ----");
+			}
+		}
+		
 		articleService.increaseViewCount(articleId);
+		
 	}
 
 	private void doModify() {

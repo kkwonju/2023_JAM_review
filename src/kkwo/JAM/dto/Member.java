@@ -8,15 +8,6 @@ public class Member extends Dto{
 	public String loginPw;
 	public String name;
 
-	public Member(int id, String loginId, String loginPw, String name,LocalDateTime regDate, LocalDateTime updateDate) {
-		this.id = id;
-		this.loginId = loginId;
-		this.loginPw = loginPw;
-		this.name = name;
-		this.regDate = regDate;
-		this.updateDate = updateDate;
-	}
-	
 	public Member(Map<String, Object> memberMap) {
 		this.id = (int) memberMap.get("id");
 		this.loginId = (String) memberMap.get("loginId");

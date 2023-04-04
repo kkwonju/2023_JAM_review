@@ -11,20 +11,6 @@ public class Article extends Dto{
 	
 	public String extra__writer;
 
-	public Article(int id, int memberId, String title, String body, LocalDateTime regDate, LocalDateTime updateDate) {
-		this(id, 0, memberId, title, body, regDate, updateDate);
-	}
-	
-	public Article(int id, int hit, int memberId, String title, String body, LocalDateTime regDate, LocalDateTime updateDate) {
-		this.id = id;
-		this.hit = hit;
-		this.memberId = memberId;
-		this.title = title;
-		this.body = body;
-		this.regDate = regDate;
-		this.updateDate = updateDate;
-	}
-
 	public Article(Map<String, Object> articleMap) {
 		this.id = (int) articleMap.get("id");
 		this.hit = (int) articleMap.get("hit");
